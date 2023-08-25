@@ -1,19 +1,22 @@
-﻿using System;
+﻿using Infrastructure.Helpers;
 using Infrastructure.States;
 using UI;
 using Zenject;
 
-public class Game
+namespace Infrastructure
 {
-    private GameStateMachine _stateMachine;
-
-    public GameStateMachine StateMachine => _stateMachine;
-
-    public Game(ICoroutineRunner coroutineRunner, LoadingCurtain loadingCurtain, LoadLevelState.Factory loadLevelStateFactor,
-        IInitializable initializable)
+    public class Game
     {
-        var sceneLoader = new SceneLoader(coroutineRunner);
-        var gameStateMachine = new GameStateMachine(sceneLoader, loadingCurtain, loadLevelStateFactor, initializable);
-        _stateMachine = gameStateMachine;
+        private GameStateMachine _stateMachine;
+
+        public GameStateMachine StateMachine => _stateMachine;
+
+        public Game(ICoroutineRunner coroutineRunner, LoadingCurtain loadingCurtain, LoadLevelState.Factory loadLevelStateFactor,
+            IInitializable initializable)
+        {
+            var sceneLoader = new SceneLoader(coroutineRunner);
+            var gameStateMachine = new GameStateMachine(sceneLoader, loadingCurtain, loadLevelStateFactor, initializable);
+            _stateMachine = gameStateMachine;
+        }
     }
 }

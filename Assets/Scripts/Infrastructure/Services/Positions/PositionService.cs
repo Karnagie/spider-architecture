@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using Data;
 using UniRx;
-using UnityEngine;
 
-namespace MVP.Factory
+namespace Infrastructure.Services.Positions
 {
     public class PositionService
     {

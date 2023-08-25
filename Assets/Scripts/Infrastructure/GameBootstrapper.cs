@@ -1,29 +1,33 @@
-﻿using Infrastructure.States;
+﻿using Infrastructure.Helpers;
+using Infrastructure.States;
 using UI;
 using UnityEngine;
 using Zenject;
 
-public class GameBootstrapper : MonoBehaviour, ICoroutineRunner
+namespace Infrastructure
 {
-    public LoadingCurtain Curtain;
-    
-    private Game _game;
-    
-    private LoadLevelState.Factory _loadLevelFactory;
-    private IInitializable _initializable;
-
-    [Inject]
-    void Construct(LoadLevelState.Factory loadLevelFactory, IInitializable initializable)
+    public class GameBootstrapper : MonoBehaviour, ICoroutineRunner
     {
-        _initializable = initializable;
-        _loadLevelFactory = loadLevelFactory;
-    }
+        public LoadingCurtain Curtain;
+    
+        private Game _game;
+    
+        private LoadLevelState.Factory _loadLevelFactory;
+        private IInitializable _initializable;
 
-    private void Awake()
-    {
-        _game = new Game(this, Curtain, _loadLevelFactory, _initializable);
-        _game.StateMachine.Enter<BootstrapState>();
+        [Inject]
+        void Construct(LoadLevelState.Factory loadLevelFactory, IInitializable initializable)
+        {
+            _initializable = initializable;
+            _loadLevelFactory = loadLevelFactory;
+        }
+
+        private void Awake()
+        {
+            _game = new Game(this, Curtain, _loadLevelFactory, _initializable);
+            _game.StateMachine.Enter<BootstrapState>();
         
-        DontDestroyOnLoad(this);
+            DontDestroyOnLoad(this);
+        }
     }
 }

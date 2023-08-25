@@ -1,42 +1,42 @@
-﻿using System;
-using Infrastructure;
-using Infrastructure.AssetManagement;
-using Infrastructure.States;
+﻿using Infrastructure.Helpers;
 using Zenject;
 
-public class BootstrapState : IState
+namespace Infrastructure.States
 {
-    private const string Bootstrap = "Bootstrap";
+    public class BootstrapState : IState
+    {
+        private const string Bootstrap = "Bootstrap";
     
-    private readonly GameStateMachine _gameStateMachine;
-    private readonly SceneLoader _sceneLoader;
-    private IInitializable _initializable;
+        private readonly GameStateMachine _gameStateMachine;
+        private readonly SceneLoader _sceneLoader;
+        private IInitializable _initializable;
 
-    public BootstrapState(GameStateMachine gameStateMachine, SceneLoader sceneLoader, IInitializable initializable)
-    {
-        _initializable = initializable;
-        _sceneLoader = sceneLoader;
-        _gameStateMachine = gameStateMachine;
-    }
+        public BootstrapState(GameStateMachine gameStateMachine, SceneLoader sceneLoader, IInitializable initializable)
+        {
+            _initializable = initializable;
+            _sceneLoader = sceneLoader;
+            _gameStateMachine = gameStateMachine;
+        }
 
-    public void Enter()
-    {
-        InitializeServices();
-        _sceneLoader.Load(Bootstrap, EnterLoadLevel);
-    }
+        public void Enter()
+        {
+            InitializeServices();
+            _sceneLoader.Load(Bootstrap, EnterLoadLevel);
+        }
 
-    private void EnterLoadLevel()
-    {
-        _gameStateMachine.Enter<LoadLevelState, string>("Main");
-    }
+        private void EnterLoadLevel()
+        {
+            _gameStateMachine.Enter<LoadLevelState, string>("Main");
+        }
 
-    private void InitializeServices()
-    {
-        _initializable.Initialize();
-    }
+        private void InitializeServices()
+        {
+            _initializable.Initialize();
+        }
     
-    public void Exit()
-    {
+        public void Exit()
+        {
         
+        }
     }
 }

@@ -1,17 +1,20 @@
-﻿public class GameLoopState : IState
+﻿namespace Infrastructure.States
 {
-    public GameLoopState(GameStateMachine gameStateMachine)
+    public class GameLoopState : IState
     {
+        public GameLoopState(GameStateMachine gameStateMachine)
+        {
         
-    }
+        }
 
-    public void Enter()
-    {
+        public void Enter()
+        {
         
-    }
+        }
 
-    public void Exit()
-    {
+        public void Exit()
+        {
         
+        }
     }
 }
