@@ -33,6 +33,7 @@ namespace MVP.Binders
                 disposable.Dispose();
             }
             Disposed?.Invoke();
+            Disposed = null;
         }
 
         public event Action Disposed;

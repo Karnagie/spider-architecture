@@ -3,22 +3,28 @@ using CompositeDirectorWithGeneratingComposites.CompositeDirector.CompositeGener
 using Data;
 using Infrastructure.Disposables;
 using MVP.View;
+using UniRx;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace MVP.Binders
 {
     public class SpiderView : IClearableWithOptions
     {
-        private SpiderBehaviour _behaviour;
+        private readonly SpiderBehaviour _behaviour;
+
+        public DisposeTime DisposeTime => DisposeTime.SceneEnd;
+        public IReactiveProperty<Transform> Transform { get; }
 
         public SpiderView(SpiderBehaviour behaviour)
         {
             _behaviour = behaviour;
+            Transform = new ReactiveProperty<Transform>(_behaviour.Transform);
         }
 
-        public void ChangePosition(Vector3Data value)
+        public void Move(Vector3 value)
         {
-            _behaviour.Transform.position = value.AsUnityVector();
+            _behaviour.Transform.position += value;
         }
 
         public void ChangeHealth(int value)
@@ -34,13 +40,12 @@ namespace MVP.Binders
 
         public void Dispose()
         {
-            if (_behaviour.gameObject != null)
+            if (_behaviour != null)
                 Object.Destroy(_behaviour.gameObject);
             
             Disposed?.Invoke();
         }
 
         public event Action Disposed;
-        public DisposeTime DisposeTime => DisposeTime.SceneEnd;
     }
 }

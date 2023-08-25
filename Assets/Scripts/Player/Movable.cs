@@ -11,7 +11,7 @@
 //             _gameObject = gameObject;
 //         }
 //
-//         public Vector3 Position => _gameObject.transform.position;
+//         public Vector3 Velocity => _gameObject.transform.position;
 //
 //         public void Move(Vector2 offset)
 //         {

@@ -27,7 +27,7 @@
 //         {
 //             progress.WorldData.PositionOnLevel = new PositionOnLevel(
 //                 CurrentLevel(),
-//                 _spider.Movable.Position.AsVector3Data()
+//                 _spider.Movable.Velocity.AsVector3Data()
 //                 );
 //         }
 //
@@ -36,7 +36,7 @@
 //             if(CurrentLevel() != progress.WorldData.PositionOnLevel.Level)
 //                 return;
 //             
-//             var savedPosition = progress.WorldData.PositionOnLevel.Position;
+//             var savedPosition = progress.WorldData.PositionOnLevel.Velocity;
 //             _spider.Movable.TeleportTo(savedPosition.AsUnityVector());
 //         }
 //

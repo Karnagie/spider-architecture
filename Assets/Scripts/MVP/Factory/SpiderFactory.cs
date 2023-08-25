@@ -10,11 +10,12 @@ namespace MVP.Factory
         private SpiderViewFactory _viewFactory;
         private PositionService _positionService;
         private BinderFactory _binderFactory;
+        private ObjectMoverFactory _objectMoverFactory;
 
-        public SpiderFactory(SpiderViewFactory viewFactory, PositionService positionService, BinderFactory binderFactory)
+        public SpiderFactory(SpiderViewFactory viewFactory, ObjectMoverFactory objectMoverFactory, BinderFactory binderFactory)
         {
+            _objectMoverFactory = objectMoverFactory;
             _binderFactory = binderFactory;
-            _positionService = positionService;
             _viewFactory = viewFactory;
         }
 
@@ -25,15 +26,15 @@ namespace MVP.Factory
             var binder = _binderFactory.CreateSpiderBinder(view, model); 
             binder.Bind();
             
-            AddToWorld(model, binder, view);
+            AddToWorld(binder, view);
 
             return model;
         }
 
-        private void AddToWorld(Spider model, SpiderBinder binder, SpiderView view)
+        private void AddToWorld(SpiderBinder binder, SpiderView view)
         {
-            _positionService.Add(model.Id);
-            binder.Bind(_positionService.GetPosition(model.Id), view.ChangePosition);
+            var inputMover = _objectMoverFactory.CreateInputMover();
+            binder.Bind(inputMover.Velocity, view.Move);
         }
     }
 }

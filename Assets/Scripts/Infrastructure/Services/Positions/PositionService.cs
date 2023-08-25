@@ -22,5 +22,10 @@ namespace MVP.Factory
         {
             _objects[id].Value += offset;
         }
+
+        public void SetPosition(int id, Vector3Data newPosition)
+        {
+            _objects[id].Value = newPosition;
+        }
     }
 }

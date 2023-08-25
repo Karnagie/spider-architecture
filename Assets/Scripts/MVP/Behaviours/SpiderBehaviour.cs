@@ -8,5 +8,6 @@ namespace MVP.View
         public GameObject Body;
         public Transform Transform;
         public TMP_Text HealthText;
+        public Rigidbody2D Rigidbody;
     }
 }
