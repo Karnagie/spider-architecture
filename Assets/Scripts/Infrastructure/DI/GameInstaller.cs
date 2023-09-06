@@ -3,12 +3,10 @@ using CompositeDirectorWithGeneratingComposites.CompositeDirector;
 using Core.Binders;
 using Data;
 using Infrastructure.AssetManagement;
-using Infrastructure.Disposables;
 using Infrastructure.Factories;
 using Infrastructure.Helpers;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
-using Infrastructure.Services.Positions;
 using Infrastructure.Services.Ticking;
 using Infrastructure.States;
 using Plugins.CompositeDirectorPlugin;
@@ -27,7 +25,6 @@ namespace Infrastructure.DI
             RegisterSceneLoader();
             RegisterLoadingCurtain();
             RegisterDirectorAndComposites();
-            Container.Bind<PositionService>().To<PositionService>().AsSingle();
 
             //Services
             RegisterTickService();
@@ -36,10 +33,7 @@ namespace Infrastructure.DI
 
             //Factories
             RegisterGameFactories();
-            RegisterBinderFactory();
             RegisterSpiderFactory();
-            RegisterSpiderViewFactory();
-            RegisterObjectMoverFactory();
         }
 
         private void Update()
@@ -49,27 +43,14 @@ namespace Infrastructure.DI
 
         private void OnDestroy()
         {
-            Container.Resolve<IClearable>().Clear().ThatWithTime(DisposeTime.SceneEnd);
             Container.Resolve<CompositeDirector>().Dispose();
         }
-
-        private void RegisterObjectMoverFactory() => 
-            Container.Bind<ObjectMoverFactory>().To<ObjectMoverFactory>().AsSingle();
-
-        private void RegisterSpiderViewFactory() => 
-            Container.Bind<SpiderViewFactory>().To<SpiderViewFactory>().AsSingle();
-
+        
         private void RegisterDirectorAndComposites()
         {
             var compositeDirector = new CompositeDirector();
             Container.Bind<CompositeDirector>().FromInstance(compositeDirector).AsSingle();
-
-            var clearables = compositeDirector.SetupComposite<IClearable>();
-            Container.Bind<IPool<IClearable>>().FromInstance(clearables).AsSingle();
-            Container.Bind<IClearable>().FromInstance(clearables as IClearable).AsSingle();
         }
-
-        private void RegisterBinderFactory() => Container.Bind<BinderFactory>().To<BinderFactory>().AsSingle();
 
         private void RegisterInputService() => Container.Bind<IInputService>().To<StandaloneInputService>().AsSingle();
 

@@ -1,24 +1,25 @@
-﻿using Core.Models.Commands;
+﻿using System;
+using Core.Models.Commands;
 using Core.Models.Components;
-using Infrastructure.Services.Ids;
 
 namespace Core.Models
 {
-    public class Spider : ICommandHandler<ISpiderCommand>, IUnique
+    public class Spider : ICommandHandler<ISpiderCommand>
     {
         public SpiderStats Stats;
+        public SpiderComponents Components;
 
-        public Spider(int id)
+        public int Id { get; }
+
+        public Spider(SpiderStats stats, SpiderComponents components)
         {
-            Stats = new SpiderStats();
-            Id = id;
+            Stats = stats;
+            Components = components;
         }
-        
+
         public void Perform(ISpiderCommand command)
         {
             command.Perform(this);
         }
-
-        public int Id { get; }
     }
 }

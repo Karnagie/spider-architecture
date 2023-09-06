@@ -1,29 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using CompositeDirectorWithGeneratingComposites.CompositeDirector.CompositeGeneration;
-using Infrastructure.Disposables;
+using Infrastructure.Factories;
 using UniRx;
 
 namespace Core.Binders
 {
-    public abstract class Binder : IClearableWithOptions
+    public class Binder : IDisposable
     {
         private List<IDisposable> _disposables = new();
         
-        public void Bind<TBinding>(IReadOnlyReactiveProperty<TBinding> property, Action<TBinding> onChange)
+        public void Bind<TBinding>(IObservable<TBinding> property, Action<TBinding> onChange)
         {
             _disposables.Add(property.Subscribe(onChange));
         }
-
-        public Result Clear()
+        
+        public void LinkHolder<TBinding>(ItemHolder<TBinding> itemHolder, TBinding item)
         {
-            Dispose();
-            return Result.Ok;
+            itemHolder.Add(item);
+            _disposables.Add(new DisposeAction(() => itemHolder.Remove(item)));
         }
-
-        public abstract void Bind();
-
-        public abstract DisposeTime DisposeTime { get; }
 
         public void Dispose()
         {
@@ -31,10 +26,44 @@ namespace Core.Binders
             {
                 disposable.Dispose();
             }
-            Disposed?.Invoke();
-            Disposed = null;
+            _disposables.Clear();
         }
 
-        public event Action Disposed;
+        public void LinkEvent(Observable observable, Action action)
+        {
+            observable.Event += action;
+            _disposables.Add(observable);
+        }
+    }
+
+    public class DisposeAction : IDisposable
+    {
+        private Action _action;
+
+        public DisposeAction(Action action)
+        {
+            _action = action;
+        }
+
+        public void Dispose()
+        {
+            _action?.Invoke();
+            _action = null;
+        }
+    }
+
+    public class Observable : IDisposable
+    {
+        public event Action Event;
+
+        public void Invoke()
+        {
+            Event?.Invoke();
+        }
+
+        public void Dispose()
+        {
+            Event = null;
+        }
     }
 }
