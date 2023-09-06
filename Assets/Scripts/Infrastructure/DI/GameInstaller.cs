@@ -1,10 +1,11 @@
 ﻿using System;
 using CompositeDirectorWithGeneratingComposites.CompositeDirector;
-using Core.Binders;
+using Core.Models.Services;
 using Data;
 using Infrastructure.AssetManagement;
 using Infrastructure.Factories;
 using Infrastructure.Helpers;
+using Infrastructure.Services.Binding;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
 using Infrastructure.Services.Ticking;
@@ -21,7 +22,6 @@ namespace Infrastructure.DI
         {
             //Infrastructure
             RegisterAssetProvider();
-            // RegisterGameFactory();
             RegisterSceneLoader();
             RegisterLoadingCurtain();
             RegisterDirectorAndComposites();
@@ -30,7 +30,7 @@ namespace Infrastructure.DI
             RegisterTickService();
             RegisterInputService();
             RegisterPersistentProgressService();
-            Container.BindInterfacesAndSelfTo<FixedTickService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<TickingService>().AsSingle();
             Container.Bind<DamageReceiverService>().To<DamageReceiverService>().AsSingle();
             Container.Bind<CollisionService>().To<CollisionService>().AsSingle();
             Container.Bind<SpiderService>().To<SpiderService>().AsSingle();
@@ -76,7 +76,5 @@ namespace Infrastructure.DI
         private void RegisterSceneLoader() => Container.Bind<SceneLoader>().To<SceneLoader>().AsSingle();
 
         private void RegisterAssetProvider() => Container.Bind<IAssetProvider>().To<AssetProvider>().AsSingle();
-
-        // private void RegisterGameFactory() => Container.Bind<IGameFactory>().To<GameFactory>().AsSingle();
     }
 }

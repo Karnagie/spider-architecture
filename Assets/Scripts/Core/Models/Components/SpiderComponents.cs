@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Core.Models
+namespace Core.Models.Components
 {
     public class SpiderComponents
     {

@@ -1,5 +1,4 @@
-﻿using Core.Binders;
-using Core.Models;
+﻿using Core.Models;
 using Infrastructure.Factories;
 using Infrastructure.Helpers;
 using Infrastructure.Services.Input;

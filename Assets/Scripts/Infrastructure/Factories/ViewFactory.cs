@@ -1,6 +1,5 @@
 using CompositeDirectorWithGeneratingComposites.CompositeDirector;
 using Core.Behaviours;
-using Core.Binders;
 using Infrastructure.AssetManagement;
 
 namespace Infrastructure.Factories

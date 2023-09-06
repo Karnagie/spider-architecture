@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Infrastructure.Factories;
 using UniRx;
-using UnityEngine;
+using Observable = Infrastructure.Helpers.Observable;
 
-namespace Core.Binders
+namespace Infrastructure.Services.Binding
 {
     public class Binder : IDisposable
     {
@@ -51,37 +50,6 @@ namespace Core.Binders
             }
 
             return false;
-        }
-    }
-
-    public class DisposeAction : IDisposable
-    {
-        private Action _action;
-
-        public DisposeAction(Action action)
-        {
-            _action = action;
-        }
-
-        public void Dispose()
-        {
-            _action?.Invoke();
-            _action = null;
-        }
-    }
-
-    public class Observable : IDisposable
-    {
-        public event Action Event;
-
-        public void Invoke()
-        {
-            Event?.Invoke();
-        }
-
-        public void Dispose()
-        {
-            Event = null;
         }
     }
 }

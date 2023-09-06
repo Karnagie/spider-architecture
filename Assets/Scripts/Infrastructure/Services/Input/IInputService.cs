@@ -1,6 +1,6 @@
 ﻿using System;
-using Core.Binders;
 using Infrastructure.Factories;
+using Infrastructure.Helpers;
 using UnityEngine;
 
 namespace Infrastructure.Services.Input

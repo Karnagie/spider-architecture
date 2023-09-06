@@ -2,7 +2,7 @@
 using UniRx;
 using UnityEngine;
 using Zenject;
-using Observable = Core.Binders.Observable;
+using Observable = Infrastructure.Helpers.Observable;
 
 namespace Infrastructure.Services.Input
 {
