@@ -12,6 +12,7 @@ using UniRx.Triggers;
 using Unity.VisualScripting;
 using UnityEngine;
 using Zenject;
+using Object = UnityEngine.Object;
 
 namespace Infrastructure.Factories
 {
@@ -23,13 +24,17 @@ namespace Infrastructure.Factories
         private DamageReceiverService _damageReceiverService;
         private ServiceComponentFactory _serviceComponentFactory;
         private SpiderService _spiderService;
+        private BinderService _binderService;
 
         public SpiderFactory(ViewFactory viewFactory, FixedTickService fixedTickService, 
             DamageReceiverService damageReceiverService, ServiceComponentFactory serviceComponentFactory, 
-            SpiderService spiderService, DamageReceiverService damagerReceiverService)
+            SpiderService spiderService, DamageReceiverService damagerReceiverService, IInputService inputService,
+            BinderService binderService)
         {
+            _binderService = binderService;
             _spiderService = spiderService;
             _damageReceiverService = damagerReceiverService;
+            _inputService = inputService;
             _serviceComponentFactory = serviceComponentFactory;
             _damageReceiverService = damageReceiverService;
             _fixedTickService = fixedTickService;
@@ -41,13 +46,13 @@ namespace Infrastructure.Factories
             var behaviour = _viewFactory.DefaultSpider();
             behaviour.Transform.position = position;
             
-            var stats = new SpiderStats(100, 10);
+            var stats = new SpiderStats(100, 10, SpiderTag.Player);
             var components = new SpiderComponents(behaviour.Transform, behaviour.Collider);
             var model = new Spider(stats, components);
             var binder = new Binder();
             
             BindPlayer(model, binder);
-            BindHealth(model, binder, behaviour);
+            BindSpider(model, binder, behaviour);
         }
         
         public void CreateEnemy(Vector3 position)
@@ -55,18 +60,19 @@ namespace Infrastructure.Factories
             var behaviour = _viewFactory.DefaultSpider();
             behaviour.Transform.position = position;
             
-            var stats = new SpiderStats(50, 5);
+            var stats = new SpiderStats(50, 5, SpiderTag.Enemy);
             var components = new SpiderComponents(behaviour.Transform, behaviour.Collider);
             var model = new Spider(stats, components);
             var binder = new Binder();
             
             BindEnemy(model, binder);
-            BindHealth(model, binder, behaviour);
+            BindSpider(model, binder, behaviour);
         }
 
         private void BindPlayer(Spider model, Binder binder)
         {
-            binder.LinkEvent(_inputService.Attacked, _serviceComponentFactory.PlayerDamager(model, 1).TryDamage);
+            var damager = _serviceComponentFactory.PlayerDamager(model, 1);
+            binder.LinkEvent(_inputService.Attacked, damager.TryDamage);
             
             binder.LinkHolder(_fixedTickService.FixedTickableHolder, _serviceComponentFactory.PlayerMovement(model));
             binder.LinkHolder(_damageReceiverService.DamageReceiverHolder, _serviceComponentFactory.DamageReceiver(model));
@@ -85,16 +91,18 @@ namespace Infrastructure.Factories
             binder.LinkHolder(_spiderService.SpiderHolder, model);
         }
 
-        private void BindHealth(Spider model, Binder binder, SpiderBehaviour behaviour)
+        private void BindSpider(Spider model, Binder binder, SpiderBehaviour behaviour)
         {
             binder.Bind(model.Stats.Health, (health => behaviour.HealthText.text = $"hp: {health}"));
             
-            binder.Bind(model.Stats.Health, (health => {
-                if (health <= 0)
-                {
-                    binder.Dispose();
-                }
+            binder.Bind(model.Stats.Health, (health =>
+            {
+                if (health > 0) return;
+                Object.Destroy(behaviour.Body);
+                binder.Dispose();
             }));
+            
+            binder.LinkHolder(_binderService.LinkerHolder, binder);
         }
     }
 
@@ -178,7 +186,7 @@ namespace Infrastructure.Factories
         }
     }
     
-    public class PlayerDamager
+    public class PlayerDamager : IDamager
     {
         private Spider _model;
         private DamageReceiverService _damageReceiverService;
@@ -197,19 +205,45 @@ namespace Infrastructure.Factories
 
         public void TryDamage()
         {
-            if (_time < Time.time)
+            if (_time > Time.time)
                 return;
             
-            var filterTag = new Filter<Spider>((spider) => spider.Stats.Tag == SpiderTag.Player);
+            var filterTag = new Filter<Spider>((spider) => spider.Stats.Tag == SpiderTag.Enemy);
             var filterCollision = new Filter<Spider>((spider) =>
                 _collisionService.HasCollision(_model.Components.Collider, spider.Components.Collider));
-            if (_damageReceiverService.TryPerform(_model.Stats.Health.Value, filterTag, filterCollision))
+            
+            if (_damageReceiverService.TryPerform(_model.Stats.Damage.Value, filterTag, filterCollision))
             {
-                _time = Time.time+_attackCooldown;
+                _time = Time.time + _attackCooldown;
             }
         }
     }
-    
+
+    public class BinderService
+    {
+        public readonly ItemHolder<Binder> LinkerHolder = new();
+
+        public TReturn Find<TReturn>(params IFilter[] filters)
+        {
+            var linkers = LinkerHolder.Get();
+
+            foreach (var linker in linkers)
+            {
+                var met = true;
+                foreach (var filter in filters)
+                {
+                    if (filter.Met(linker) == false)
+                        met = false;
+                }
+                
+                if (met && linker.TryGetComponent<TReturn>(out var component))
+                    return component;
+            }
+
+            return default;
+        }
+    }
+
     public class EnemyMovement : IFixedTickable
     {
         private Spider _model;
@@ -226,7 +260,7 @@ namespace Infrastructure.Factories
             if (_spiderHolder.TryFind(SpiderTag.Player, out Spider player))
             {
                 var delta = (player.Components.Transform.position - _model.Components.Transform.position).normalized;
-                _model.Components.Transform.Translate(delta);
+                _model.Components.Transform.Translate(delta*Time.deltaTime);
             }
         }
     }
@@ -250,16 +284,16 @@ namespace Infrastructure.Factories
 
         public void TryDamage()
         {
-            if (_time < Time.time)
+            if (_time > Time.time)
                 return;
             
             var filterTag = new Filter<Spider>((spider) => spider.Stats.Tag == SpiderTag.Player);
             var filterCollision = new Filter<Spider>((spider) =>
                 _collisionService.HasCollision(_model.Components.Collider, spider.Components.Collider));
             
-            if (_damageReceiverService.TryPerform(_model.Stats.Health.Value, filterTag, filterCollision))
+            if (_damageReceiverService.TryPerform(_model.Stats.Damage.Value, filterTag, filterCollision))
             {
-                _time = Time.time+_attackCooldown;
+                _time = Time.time + _attackCooldown;
             }
         }
 
@@ -282,7 +316,7 @@ namespace Infrastructure.Factories
         public void TryDamage();
     }
 
-    public class Filter<T> :IFilter where T : class
+    public class Filter<T> : IFilter where T : class
     {
         private Func<T, bool> _condition;
 
@@ -291,17 +325,20 @@ namespace Infrastructure.Factories
             _condition = condition;
         }
 
-        public bool IsMet<TItem>(TItem item)
+        public bool Met(Binder linker)
         {
-            if(item is T typedItem)
-                return _condition.Invoke(typedItem);
+            if (linker.TryGetComponent<T>(out var component))
+            {
+                return _condition.Invoke(component);
+            }
+
             return false;
         }
     }
 
     public interface IFilter
     {
-        bool IsMet<TItem>(TItem item);
+        bool Met(Binder linker);
     }
 
     public class SpiderService
@@ -362,32 +399,24 @@ namespace Infrastructure.Factories
     public class DamageReceiverService : IDisposable
     {
         public readonly ItemHolder<IDamageReceiver> DamageReceiverHolder = new();
+        private BinderService _binderService;
+
+        public DamageReceiverService(BinderService binderService)
+        {
+            _binderService = binderService;
+        }
 
         public bool TryPerform(int value, params IFilter[] filters)
         {
-            var receivers = DamageReceiverHolder.Get();
             var gotDamage = false;
-            foreach (var receiver in receivers)
+            var receiver  = _binderService.Find<IDamageReceiver>(filters);
+            if(receiver != null)
             {
-                if (IsMet(receiver, filters))
-                {
-                    receiver.GetDamage(value);
-                    gotDamage = true;
-                }
+                receiver.GetDamage(value);
+                gotDamage = true;
             }
-
+            
             return gotDamage;
-        }
-
-        private bool IsMet(IDamageReceiver receiver, IFilter[] filters)
-        {
-            foreach (var filter in filters)
-            {
-                if (filter.IsMet(receiver) == false)
-                    return false;
-            }
-
-            return true;
         }
 
         public void Dispose()

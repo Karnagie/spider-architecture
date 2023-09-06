@@ -30,10 +30,17 @@ namespace Infrastructure.DI
             RegisterTickService();
             RegisterInputService();
             RegisterPersistentProgressService();
+            Container.BindInterfacesAndSelfTo<FixedTickService>().AsSingle();
+            Container.Bind<DamageReceiverService>().To<DamageReceiverService>().AsSingle();
+            Container.Bind<CollisionService>().To<CollisionService>().AsSingle();
+            Container.Bind<SpiderService>().To<SpiderService>().AsSingle();
+            Container.Bind<BinderService>().To<BinderService>().AsSingle();
 
             //Factories
             RegisterGameFactories();
             RegisterSpiderFactory();
+            Container.Bind<ViewFactory>().To<ViewFactory>().AsSingle();
+            Container.Bind<ServiceComponentFactory>().To<ServiceComponentFactory>().AsSingle();
         }
 
         private void Update()
@@ -52,7 +59,7 @@ namespace Infrastructure.DI
             Container.Bind<CompositeDirector>().FromInstance(compositeDirector).AsSingle();
         }
 
-        private void RegisterInputService() => Container.Bind<IInputService>().To<StandaloneInputService>().AsSingle();
+        private void RegisterInputService() => Container.BindInterfacesTo<StandaloneInputService>().AsSingle();
 
         private void RegisterSpiderFactory() => Container.Bind<SpiderFactory>().To<SpiderFactory>().AsSingle();
 

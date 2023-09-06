@@ -45,8 +45,8 @@ namespace Infrastructure.States
 
         private void CreatePlayerSpider()
         {
-            _gameFactory.CreatePlayer(new Vector3(10, 10, 0));
-            _gameFactory.CreateEnemy(new Vector3(10, 10, 0));
+            _gameFactory.CreatePlayer(new Vector3(0, 0, 0));
+            _gameFactory.CreateEnemy(new Vector3(1, 1, 0));
         }
 
         public class Factory : PlaceholderFactory<GameStateMachine, SceneLoader, LoadingCurtain, LoadLevelState>

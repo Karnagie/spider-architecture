@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using Infrastructure.Factories;
 using UniRx;
+using UnityEngine;
 
 namespace Core.Binders
 {
     public class Binder : IDisposable
     {
         private List<IDisposable> _disposables = new();
+        private List<object> _components = new();
         
         public void Bind<TBinding>(IObservable<TBinding> property, Action<TBinding> onChange)
         {
@@ -17,6 +19,7 @@ namespace Core.Binders
         public void LinkHolder<TBinding>(ItemHolder<TBinding> itemHolder, TBinding item)
         {
             itemHolder.Add(item);
+            _components.Add(item);
             _disposables.Add(new DisposeAction(() => itemHolder.Remove(item)));
         }
 
@@ -33,6 +36,21 @@ namespace Core.Binders
         {
             observable.Event += action;
             _disposables.Add(observable);
+        }
+
+        public bool TryGetComponent<THolder>(out THolder component)
+        {
+            component = default;
+            foreach (var holder in _components)
+            {
+                if (holder is THolder typedHolder)
+                {
+                    component = typedHolder;
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 

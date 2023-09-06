@@ -8,10 +8,11 @@ namespace Core.Models.Components
         public IntStat Health;
         public IntStat Damage;
 
-        public SpiderStats(int health, int damage)
+        public SpiderStats(int health, int damage, SpiderTag tag)
         {
             Health = new IntStat(health);
             Damage = new IntStat(damage);
+            Tag = tag;
         }
 
         public SpiderTag Tag;
