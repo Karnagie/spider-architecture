@@ -1,6 +1,7 @@
 ﻿using Core.Models;
 using Core.Models.Services;
 using Core.Models.Systems;
+using Infrastructure.Services.Binding;
 using Infrastructure.Services.Input;
 using Zenject;
 
@@ -21,31 +22,31 @@ namespace Infrastructure.Factories
             _inputService = inputService;
         }
 
-        public PlayerMovement PlayerMovement(Spider model)
+        public ISystem PlayerMovement(Spider model)
         {
             var movement = new PlayerMovement(_inputService, model);
             return movement;
         }
 
-        public IDamageReceiver DamageReceiver(Spider model)
+        public ISystem DamageReceiver(Spider model)
         {
             var damaging = new DamageReceiver(model);
             return damaging;
         }
 
-        public IFixedTickable EnemyMovement(Spider model)
+        public ISystem EnemyMovement(Spider model)
         {
             var movement = new EnemyMovement(model, _spiderService);
             return movement;
         }
 
-        public EnemyDamager Damager(Spider model, float cooldown)
+        public ISystem EnemyDamager(Spider model, float cooldown)
         {
             var damager = new EnemyDamager(model, cooldown, _damageReceiverService, _collisionService);
             return damager;
         }
 
-        public PlayerDamager PlayerDamager(Spider model, int cooldown)
+        public IDamager PlayerDamager(Spider model, int cooldown)
         {
             var damager = new PlayerDamager(model, cooldown, _damageReceiverService, _collisionService);
             return damager;

@@ -5,32 +5,26 @@ using Infrastructure.Services.Binding;
 
 namespace Core.Models.Services
 {
-    public class DamageReceiverService : IDisposable
+    public class DamageReceiverService
     {
-        public readonly ItemHolder<IDamageReceiver> DamageReceiverHolder = new();
-        private BinderService _binderService;
+        private SystemService _systemService;
 
-        public DamageReceiverService(BinderService binderService)
+        public DamageReceiverService(SystemService systemService)
         {
-            _binderService = binderService;
+            _systemService = systemService;
         }
 
         public bool TryPerform(int damage, params IFilter[] filters)
         {
             var gotDamage = false;
-            var receiver  = _binderService.Find<IDamageReceiver>(filters);
-            if(receiver != null)
+            var receiver = _systemService.TryFindSystems<IDamageReceiver>(filters);
+            foreach (var damageReceiver in receiver)
             {
-                receiver.GetDamage(damage);
+                damageReceiver.GetDamage(damage);
                 gotDamage = true;
             }
             
             return gotDamage;
-        }
-
-        public void Dispose()
-        {
-            DamageReceiverHolder.Dispose();
         }
     }
 }

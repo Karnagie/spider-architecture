@@ -1,15 +1,14 @@
 ﻿using System;
 using Core.Models.Commands;
 using Core.Models.Components;
+using Infrastructure.Services.Binding;
 
 namespace Core.Models
 {
-    public class Spider : ICommandHandler<ISpiderCommand>
+    public class Spider : ICommandHandler<ISpiderCommand>, ISystem
     {
         public SpiderStats Stats;
         public SpiderComponents Components;
-
-        public int Id { get; }
 
         public Spider(SpiderStats stats, SpiderComponents components)
         {

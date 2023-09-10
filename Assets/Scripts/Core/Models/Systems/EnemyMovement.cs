@@ -1,11 +1,12 @@
 ﻿using Core.Models.Services;
 using Infrastructure.Helpers;
+using Infrastructure.Services.Binding;
 using UnityEngine;
 using Zenject;
 
 namespace Core.Models.Systems
 {
-    public class EnemyMovement : IFixedTickable
+    public class EnemyMovement : IFixedTickable, ISystem
     {
         private Spider _model;
         private SpiderService _spiderHolder;

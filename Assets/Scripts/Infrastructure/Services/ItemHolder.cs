@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Infrastructure.Services
 {
-    public class ItemHolder<T> : IDisposable
+    public class ItemHolder<T> : IDisposable, IItemHolder<T>
     {
         private List<T> _items = new();
 
@@ -30,5 +30,11 @@ namespace Infrastructure.Services
         {
             _items.Clear();
         }
+    }
+
+    public interface IItemHolder<in T>
+    {
+        void Add(T item);
+        void Remove(T item);
     }
 }

@@ -8,18 +8,22 @@ namespace Infrastructure.Services.Binding
     public class Binder : IDisposable
     {
         private List<IDisposable> _disposables = new();
-        private List<object> _components = new();
         
         public void Bind<TBinding>(IObservable<TBinding> property, Action<TBinding> onChange)
         {
             _disposables.Add(property.Subscribe(onChange));
         }
         
-        public void LinkHolder<TBinding>(ItemHolder<TBinding> itemHolder, TBinding item)
+        public void LinkHolder<TBinding>(IItemHolder<TBinding> itemHolder, TBinding item)
         {
             itemHolder.Add(item);
-            _components.Add(item);
             _disposables.Add(new DisposeAction(() => itemHolder.Remove(item)));
+        }
+
+        public void LinkEvent(Observable observable, Action action)
+        {
+            observable.Event += action;
+            _disposables.Add(observable);
         }
 
         public void Dispose()
@@ -30,26 +34,78 @@ namespace Infrastructure.Services.Binding
             }
             _disposables.Clear();
         }
+    }
 
-        public void LinkEvent(Observable observable, Action action)
+    public class SystemService : IItemHolder<SystemLinker>
+    {
+        private List<SystemLinker> _linkedSystems = new();
+        
+        public TReturn[] TryFindSystems<TReturn>(params IFilter[] filters)
         {
-            observable.Event += action;
-            _disposables.Add(observable);
+            List<TReturn> targets = new();
+            
+            foreach (var linker in _linkedSystems)
+            {
+                if (!Met(linker, filters))
+                    continue;
+                
+                if (linker.TryGetSystem(out TReturn system))
+                {
+                    targets.Add(system);
+                }
+            }
+
+            return targets.ToArray();
         }
 
-        public bool TryGetComponent<THolder>(out THolder component)
+        private bool Met(SystemLinker linker, IFilter[] filters)
         {
-            component = default;
-            foreach (var holder in _components)
+            foreach (var filter in filters)
             {
-                if (holder is THolder typedHolder)
+                if (!filter.Met(linker))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public void Add(SystemLinker item)
+        {
+            _linkedSystems.Add(item);
+        }
+
+        public void Remove(SystemLinker item)
+        {
+            _linkedSystems.Remove(item);
+        }
+    }
+
+    public class SystemLinker
+    {
+        private List<ISystem> _systems = new();
+
+        public void Add(ISystem system)
+        {
+            _systems.Add(system);
+        }
+        
+        public bool TryGetSystem<T>(out T foundSystem)
+        {
+            foundSystem = default;
+            foreach (var system in _systems)
+            {
+                if (system is T typedSystem)
                 {
-                    component = typedHolder;
+                    foundSystem = typedSystem;
                     return true;
                 }
             }
 
             return false;
         }
+    }
+
+    public interface ISystem
+    {
     }
 }

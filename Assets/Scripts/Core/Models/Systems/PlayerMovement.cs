@@ -1,9 +1,10 @@
-﻿using Infrastructure.Services.Input;
+﻿using Infrastructure.Services.Binding;
+using Infrastructure.Services.Input;
 using Zenject;
 
 namespace Core.Models.Systems
 {
-    public class PlayerMovement : IFixedTickable
+    public class PlayerMovement : IFixedTickable, ISystem
     {
         private IInputService _inputService;
         private Spider _model;

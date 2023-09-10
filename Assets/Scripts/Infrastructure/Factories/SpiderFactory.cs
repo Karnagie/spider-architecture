@@ -20,25 +20,18 @@ namespace Infrastructure.Factories
     public class SpiderFactory
     {
         private readonly ViewFactory _viewFactory;
-        private TickingService _tickingService;
         private IInputService _inputService;
-        private DamageReceiverService _damageReceiverService;
-        private ServiceComponentFactory _serviceComponentFactory;
-        private SpiderService _spiderService;
-        private BinderService _binderService;
+        private ServiceComponentFactory _serviceSystemFactory;
+        private SystemService _systemService;
 
-        public SpiderFactory(ViewFactory viewFactory, TickingService tickingService, 
-            DamageReceiverService damageReceiverService, ServiceComponentFactory serviceComponentFactory, 
-            SpiderService spiderService, DamageReceiverService damagerReceiverService, IInputService inputService,
-            BinderService binderService)
+        public SpiderFactory(ViewFactory viewFactory,
+            ServiceComponentFactory serviceSystemFactory,
+            IInputService inputService,
+            SystemService systemService)
         {
-            _binderService = binderService;
-            _spiderService = spiderService;
-            _damageReceiverService = damagerReceiverService;
+            _systemService = systemService;
             _inputService = inputService;
-            _serviceComponentFactory = serviceComponentFactory;
-            _damageReceiverService = damageReceiverService;
-            _tickingService = tickingService;
+            _serviceSystemFactory = serviceSystemFactory;
             _viewFactory = viewFactory;
         }
 
@@ -51,9 +44,10 @@ namespace Infrastructure.Factories
             var components = new SpiderComponents(behaviour.Transform, behaviour.Collider);
             var model = new Spider(stats, components);
             var binder = new Binder();
+            var linker = new SystemLinker();
             
-            BindPlayer(model, binder);
-            BindSpider(model, binder, behaviour);
+            LinkPlayerSystems(model, binder, linker);
+            BindSpider(model, binder, behaviour, linker);
         }
         
         public void CreateEnemy(Vector3 position)
@@ -65,34 +59,38 @@ namespace Infrastructure.Factories
             var components = new SpiderComponents(behaviour.Transform, behaviour.Collider);
             var model = new Spider(stats, components);
             var binder = new Binder();
+            var linker = new SystemLinker();
             
-            BindEnemy(model, binder);
-            BindSpider(model, binder, behaviour);
+            LinkEnemySystems(model, linker);
+            BindSpider(model, binder, behaviour, linker);
         }
 
-        private void BindPlayer(Spider model, Binder binder)
+        private void LinkPlayerSystems(Spider model, Binder binder, SystemLinker linker)
         {
-            var damager = _serviceComponentFactory.PlayerDamager(model, 1);
+            var damager = _serviceSystemFactory.PlayerDamager(model, 1);
+            var playerMovement = _serviceSystemFactory.PlayerMovement(model);
+            var damageReceiver = _serviceSystemFactory.DamageReceiver(model);
+
             binder.LinkEvent(_inputService.Attacked, damager.TryDamage);
             
-            binder.LinkHolder(_tickingService.FixedTickableHolder, _serviceComponentFactory.PlayerMovement(model));
-            binder.LinkHolder(_damageReceiverService.DamageReceiverHolder, _serviceComponentFactory.DamageReceiver(model));
-            binder.LinkHolder(_spiderService.SpiderHolder, model);
+            linker.Add(playerMovement);
+            linker.Add(damageReceiver);
+            linker.Add(model);
         }
         
-        private void BindEnemy(Spider model, Binder binder)
+        private void LinkEnemySystems(Spider model, SystemLinker linker)
         {
-            var damager = _serviceComponentFactory.Damager(model, 1);
-            var damageReceiver = _serviceComponentFactory.DamageReceiver(model);
-            var enemyMovement = _serviceComponentFactory.EnemyMovement(model);
+            var damager = _serviceSystemFactory.EnemyDamager(model, 1);
+            var damageReceiver = _serviceSystemFactory.DamageReceiver(model);
+            var enemyMovement = _serviceSystemFactory.EnemyMovement(model);
             
-            binder.LinkHolder(_tickingService.FixedTickableHolder, enemyMovement);
-            binder.LinkHolder(_damageReceiverService.DamageReceiverHolder, damageReceiver);
-            binder.LinkHolder(_tickingService.TickableHolder, damager);
-            binder.LinkHolder(_spiderService.SpiderHolder, model);
+            linker.Add(enemyMovement);
+            linker.Add(damageReceiver);
+            linker.Add(damager);
+            linker.Add(model);
         }
 
-        private void BindSpider(Spider model, Binder binder, SpiderBehaviour behaviour)
+        private void BindSpider(Spider model, Binder binder, SpiderBehaviour behaviour, SystemLinker linker)
         {
             binder.Bind(model.Stats.Health, (health => behaviour.HealthText.text = $"hp: {health}"));
             binder.Bind(model.Stats.Health, (health =>
@@ -101,26 +99,9 @@ namespace Infrastructure.Factories
                 DisposeModel(binder, behaviour);
             }));
             
-            binder.LinkHolder(_binderService.LinkerHolder, binder);
-
-            BindTimer(model, binder, behaviour);
+            binder.LinkHolder(_systemService, linker);
         }
-
-        private void BindTimer(Spider model, Binder binder, SpiderBehaviour behaviour)
-        {
-            behaviour.Button.onClick.AddListener((() => model.Stats.Timer.Decrease(10)));
-            behaviour.Canvas.renderMode = RenderMode.WorldSpace;
-            behaviour.Canvas.worldCamera = Camera.main;
-
-            binder.LinkHolder(_tickingService.TickableHolder, new TimerTicker(model.Stats.Timer));
-            binder.Bind(model.Stats.Timer, (timer => behaviour.TimerText.text = $"timer: {timer}"));
-            binder.Bind(model.Stats.Timer, (timer =>
-            {
-                if (timer > 0) return;
-                DisposeModel(binder, behaviour);
-            }));
-        }
-
+        
         private static void DisposeModel(Binder binder, SpiderBehaviour behaviour)
         {
             binder.Dispose();

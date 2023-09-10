@@ -1,6 +1,8 @@
-﻿namespace Core.Models.Systems
+﻿using Infrastructure.Services.Binding;
+
+namespace Core.Models.Systems
 {
-    public interface IDamageReceiver
+    public interface IDamageReceiver : ISystem
     {
         void GetDamage(int value);
     }

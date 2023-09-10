@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Infrastructure.Services.Binding
 {
@@ -10,10 +11,15 @@ namespace Infrastructure.Services.Binding
         {
             _condition = condition;
         }
-
-        public bool Met(Binder linker)
+        
+        public Filter()
         {
-            if (linker.TryGetComponent<T>(out var component))
+            _condition = _ => true;
+        }
+
+        public bool Met(SystemLinker linker)
+        {
+            if (linker.TryGetSystem<T>(out var component))
             {
                 return _condition.Invoke(component);
             }

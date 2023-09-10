@@ -2,6 +2,7 @@
 {
     public interface IFilter
     {
-        bool Met(Binder linker);
+        // bool Met(Binder linker);
+        bool Met(SystemLinker linker);
     }
 }

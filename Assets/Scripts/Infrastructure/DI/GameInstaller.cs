@@ -30,11 +30,10 @@ namespace Infrastructure.DI
             RegisterTickService();
             RegisterInputService();
             RegisterPersistentProgressService();
-            Container.BindInterfacesAndSelfTo<TickingService>().AsSingle();
             Container.Bind<DamageReceiverService>().To<DamageReceiverService>().AsSingle();
             Container.Bind<CollisionService>().To<CollisionService>().AsSingle();
             Container.Bind<SpiderService>().To<SpiderService>().AsSingle();
-            Container.Bind<BinderService>().To<BinderService>().AsSingle();
+            Container.Bind<SystemService>().To<SystemService>().AsSingle();
 
             //Factories
             RegisterGameFactories();

@@ -1,36 +1,27 @@
 ﻿using System.Collections.Generic;
+using Infrastructure.Services.Binding;
 using Zenject;
 
 namespace Infrastructure.Services.Ticking
 {
     public class TickService : ITickable, IFixedTickable
     {
-        private List<ITickable> _tickables = new();
-        private List<IFixedTickable> _fixedTickables = new();
+        private SystemService _systemService;
+        private Filter<ITickable> _tickFilter;
+        private Filter<IFixedTickable> _fixedTickFilter;
 
-        public void AddTickable(ITickable tickable)
+        public TickService(SystemService systemService)
         {
-            _tickables.Add(tickable);
-        }
-        
-        public void AddFixedTickable(IFixedTickable fixedTickable)
-        {
-            _fixedTickables.Add(fixedTickable);
-        }
-
-        public void RemoveTickable(ITickable tickable)
-        {
-            _tickables.Remove(tickable);
-        }
-
-        public void RemoveFixedTickable(IFixedTickable fixedTickable)
-        {
-            _fixedTickables.Remove(fixedTickable);
+            _systemService = systemService;
+            _tickFilter = new Filter<ITickable>();
+            _fixedTickFilter = new Filter<IFixedTickable>();
         }
         
         public void Tick()
         {
-            foreach (var tickable in _tickables.ToArray())
+            var tickables = _systemService.TryFindSystems<ITickable>();
+            
+            foreach (var tickable in tickables)
             {
                 tickable.Tick();
             }
@@ -38,7 +29,9 @@ namespace Infrastructure.Services.Ticking
 
         public void FixedTick()
         {
-            foreach (var tickable in _fixedTickables.ToArray())
+            var fixedTickables = _systemService.TryFindSystems<IFixedTickable>();
+            
+            foreach (var tickable in fixedTickables)
             {
                 tickable.FixedTick();
             }
