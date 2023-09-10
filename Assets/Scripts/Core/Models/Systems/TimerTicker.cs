@@ -2,7 +2,7 @@
 using UnityEngine;
 using Zenject;
 
-namespace Infrastructure.Factories
+namespace Core.Models.Systems
 {
     public class TimerTicker : ITickable
     {

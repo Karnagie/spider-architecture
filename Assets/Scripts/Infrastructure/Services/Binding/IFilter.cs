@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.Services.Binding
+﻿using Infrastructure.Services.System;
+
+namespace Infrastructure.Services.Binding
 {
     public interface IFilter
     {
