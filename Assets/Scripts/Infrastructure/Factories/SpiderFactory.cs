@@ -42,7 +42,7 @@ namespace Infrastructure.Factories
             behaviour.Transform.position = position;
             
             var stats = new SpiderStats(100, 10, SpiderTag.Player);
-            var components = new SpiderComponents(behaviour.Transform, behaviour.Collider);
+            var components = new SpiderComponents(behaviour.Transform, behaviour.Collider, behaviour.Rigidbody);
             var model = new Spider(stats, components);
             var binder = new Binder();
             var linker = new SystemLinker();
@@ -57,7 +57,7 @@ namespace Infrastructure.Factories
             behaviour.Transform.position = position;
             
             var stats = new SpiderStats(50, 5, SpiderTag.Enemy);
-            var components = new SpiderComponents(behaviour.Transform, behaviour.Collider);
+            var components = new SpiderComponents(behaviour.Transform, behaviour.Collider, behaviour.Rigidbody);
             var model = new Spider(stats, components);
             var binder = new Binder();
             var linker = new SystemLinker();
@@ -84,11 +84,13 @@ namespace Infrastructure.Factories
             var damager = _serviceSystemFactory.EnemyDamager(model, 1);
             var damageReceiver = _serviceSystemFactory.DamageReceiver(model);
             var enemyMovement = _serviceSystemFactory.EnemyMovement(model);
+            var physicBody = _serviceSystemFactory.DefaultBody(model);
             
             linker.Add(enemyMovement);
             linker.Add(damageReceiver);
             linker.Add(damager);
             linker.Add(model);
+            linker.Add(physicBody);
         }
 
         private void BindSpider(Spider model, Binder binder, SpiderBehaviour behaviour, SystemLinker linker)

@@ -11,12 +11,12 @@ namespace Core.Models.Systems
         private DamageReceiverService _damageReceiverService;
         private float _attackCooldown;
         private float _time;
-        private CollisionService _collisionService;
+        private PhysicsService _physicsService;
 
         public PlayerDamager(Spider model, float attackCooldown, 
-            DamageReceiverService damageReceiverService, CollisionService collisionService)
+            DamageReceiverService damageReceiverService, PhysicsService physicsService)
         {
-            _collisionService = collisionService;
+            _physicsService = physicsService;
             _attackCooldown = attackCooldown;
             _damageReceiverService = damageReceiverService;
             _model = model;
@@ -28,8 +28,14 @@ namespace Core.Models.Systems
                 return;
 
             var filters = SetFiltersForTarget();
+
+            var damaged = _damageReceiverService.TryPerform(_model.Stats.Damage.Value, filters);
+            foreach (var reciever in damaged)
+            {
+                _physicsService.TryPush(reciever, _model);
+            }
             
-            if (_damageReceiverService.TryPerform(_model.Stats.Damage.Value, filters))
+            if (damaged.Length > 0)
             {
                 _time = Time.time + _attackCooldown;
             }
@@ -44,7 +50,7 @@ namespace Core.Models.Systems
         {
             var filterTag = new Filter<Spider>((spider) => spider.Stats.Tag == SpiderTag.Enemy);
             var filterCollision = new Filter<Spider>((spider) =>
-                _collisionService.HasCollision(_model.Components.Collider, spider.Components.Collider));
+                _physicsService.HasCollision(_model.Components.Collider, spider.Components.Collider));
 
             return new[] {filterTag, filterCollision};
         }

@@ -1,6 +1,4 @@
-﻿using System;
-using Core.Models.Systems;
-using Infrastructure.Services;
+﻿using Core.Models.Systems;
 using Infrastructure.Services.Binding;
 using Infrastructure.Services.System;
 
@@ -15,17 +13,15 @@ namespace Core.Models.Services
             _systemService = systemService;
         }
 
-        public bool TryPerform(int damage, params IFilter[] filters)
+        public IDamageReceiver[] TryPerform(int damage, params IFilter[] filters)
         {
-            var gotDamage = false;
-            var receiver = _systemService.TryFindSystems<IDamageReceiver>(filters);
-            foreach (var damageReceiver in receiver)
+            var receivers = _systemService.TryFindSystems<IDamageReceiver>(filters);
+            foreach (var damageReceiver in receivers)
             {
                 damageReceiver.GetDamage(damage);
-                gotDamage = true;
             }
             
-            return gotDamage;
+            return receivers;
         }
     }
 }

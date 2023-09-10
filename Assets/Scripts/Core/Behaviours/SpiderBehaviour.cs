@@ -11,5 +11,6 @@ namespace Core.Behaviours
         
         public Transform Transform;
         public Collider2D Collider;
+        public Rigidbody2D Rigidbody;
     }
 }

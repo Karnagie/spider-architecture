@@ -13,15 +13,15 @@ namespace Core.Models.Systems
     {
         private Spider _model;
         private DamageReceiverService _damageReceiverService;
-        private CollisionService _collisionService;
+        private PhysicsService _physicsService;
         private float _attackCooldown;
         private float _time;
 
         public EnemyDamager(Spider model, float attackCooldown, 
-            DamageReceiverService damageReceiverService, CollisionService collisionService)
+            DamageReceiverService damageReceiverService, PhysicsService physicsService)
         {
             _attackCooldown = attackCooldown;
-            _collisionService = collisionService;
+            _physicsService = physicsService;
             _damageReceiverService = damageReceiverService;
             _model = model;
         }
@@ -33,9 +33,12 @@ namespace Core.Models.Systems
             
             var filterTag = new Filter<Spider>((spider) => spider.Stats.Tag == SpiderTag.Player);
             var filterCollision = new Filter<Spider>((spider) =>
-                _collisionService.HasCollision(_model.Components.Collider, spider.Components.Collider));
+                _physicsService.HasCollision(_model.Components.Collider, spider.Components.Collider));
+
+            var damaged = _damageReceiverService
+                .TryPerform(_model.Stats.Damage.Value, filterTag, filterCollision);
             
-            if (_damageReceiverService.TryPerform(_model.Stats.Damage.Value, filterTag, filterCollision))
+            if (damaged.Length > 0)
             {
                 _time = Time.time + _attackCooldown;
             }

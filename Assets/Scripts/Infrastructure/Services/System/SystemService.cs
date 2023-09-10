@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Core.Models.Systems;
 using Infrastructure.Services.Binding;
+using NotImplementedException = System.NotImplementedException;
 
 namespace Infrastructure.Services.System
 {
@@ -44,6 +47,20 @@ namespace Infrastructure.Services.System
         public void Remove(SystemLinker item)
         {
             _linkedSystems.Remove(item);
+        }
+
+        public SystemLinker[] LinkersThatHas(ISystem system)
+        {
+            List<SystemLinker> linkers = new();
+            foreach (var linkedSystem in _linkedSystems)
+            {
+                if (linkedSystem.Has(system))
+                {
+                    linkers.Add(linkedSystem);
+                }
+            }
+
+            return linkers.ToArray();
         }
     }
 }

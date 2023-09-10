@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Core.Models.Systems;
+using NotImplementedException = System.NotImplementedException;
 
 namespace Infrastructure.Services.System
 {
@@ -20,6 +21,19 @@ namespace Infrastructure.Services.System
                 if (system is T typedSystem)
                 {
                     foundSystem = typedSystem;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool Has(ISystem findingSystem)
+        {
+            foreach (var system in _systems)
+            {
+                if (system == findingSystem)
+                {
                     return true;
                 }
             }

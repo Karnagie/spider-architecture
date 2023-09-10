@@ -11,13 +11,13 @@ namespace Infrastructure.Factories
     {
         private IInputService _inputService;
         private SpiderService _spiderService;
-        private CollisionService _collisionService;
+        private PhysicsService _physicsService;
         private DamageReceiverService _damageReceiverService;
 
-        public ServiceComponentFactory(IInputService inputService, SpiderService spiderService, CollisionService collisionService, DamageReceiverService damageReceiverService)
+        public ServiceComponentFactory(IInputService inputService, SpiderService spiderService, PhysicsService physicsService, DamageReceiverService damageReceiverService)
         {
             _spiderService = spiderService;
-            _collisionService = collisionService;
+            _physicsService = physicsService;
             _damageReceiverService = damageReceiverService;
             _inputService = inputService;
         }
@@ -42,14 +42,19 @@ namespace Infrastructure.Factories
 
         public ISystem EnemyDamager(Spider model, float cooldown)
         {
-            var damager = new EnemyDamager(model, cooldown, _damageReceiverService, _collisionService);
+            var damager = new EnemyDamager(model, cooldown, _damageReceiverService, _physicsService);
             return damager;
         }
 
         public IDamager PlayerDamager(Spider model, int cooldown)
         {
-            var damager = new PlayerDamager(model, cooldown, _damageReceiverService, _collisionService);
+            var damager = new PlayerDamager(model, cooldown, _damageReceiverService, _physicsService);
             return damager;
+        }
+
+        public ISystem DefaultBody(Spider model)
+        {
+            return new DefaultBody(model.Components.Rigidbody);
         }
     }
 }

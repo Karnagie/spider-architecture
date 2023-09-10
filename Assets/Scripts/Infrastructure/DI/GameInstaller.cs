@@ -32,7 +32,7 @@ namespace Infrastructure.DI
             RegisterInputService();
             RegisterPersistentProgressService();
             Container.Bind<DamageReceiverService>().To<DamageReceiverService>().AsSingle();
-            Container.Bind<CollisionService>().To<CollisionService>().AsSingle();
+            Container.Bind<PhysicsService>().To<PhysicsService>().AsSingle();
             Container.Bind<SpiderService>().To<SpiderService>().AsSingle();
             Container.Bind<SystemService>().To<SystemService>().AsSingle();
 

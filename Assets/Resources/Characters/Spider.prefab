@@ -340,6 +340,7 @@ MonoBehaviour:
   HealthText: {fileID: 1033367666119341155}
   Transform: {fileID: 7131635559291543764}
   Collider: {fileID: 2642474489458110190}
+  Rigidbody: {fileID: 6882574044653100313}
 --- !u!50 &6882574044653100313
 Rigidbody2D:
   serializedVersion: 4
