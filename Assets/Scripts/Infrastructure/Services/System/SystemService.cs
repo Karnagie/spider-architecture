@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Core.Models.Systems;
 using Infrastructure.Services.Binding;
-using NotImplementedException = System.NotImplementedException;
 
 namespace Infrastructure.Services.System
 {

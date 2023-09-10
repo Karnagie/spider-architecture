@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Core.Models.Systems;
-using NotImplementedException = System.NotImplementedException;
 
 namespace Infrastructure.Services.System
 {
