@@ -1,4 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Core.Behaviours;
 using Core.Models;
 using Core.Models.Components;
@@ -92,15 +95,36 @@ namespace Infrastructure.Factories
         private void BindSpider(Spider model, Binder binder, SpiderBehaviour behaviour)
         {
             binder.Bind(model.Stats.Health, (health => behaviour.HealthText.text = $"hp: {health}"));
-            
             binder.Bind(model.Stats.Health, (health =>
             {
                 if (health > 0) return;
-                Object.Destroy(behaviour.Body);
-                binder.Dispose();
+                DisposeModel(binder, behaviour);
             }));
             
             binder.LinkHolder(_binderService.LinkerHolder, binder);
+
+            BindTimer(model, binder, behaviour);
+        }
+
+        private void BindTimer(Spider model, Binder binder, SpiderBehaviour behaviour)
+        {
+            behaviour.Button.onClick.AddListener((() => model.Stats.Timer.Decrease(10)));
+            behaviour.Canvas.renderMode = RenderMode.WorldSpace;
+            behaviour.Canvas.worldCamera = Camera.main;
+
+            binder.LinkHolder(_tickingService.TickableHolder, new TimerTicker(model.Stats.Timer));
+            binder.Bind(model.Stats.Timer, (timer => behaviour.TimerText.text = $"timer: {timer}"));
+            binder.Bind(model.Stats.Timer, (timer =>
+            {
+                if (timer > 0) return;
+                DisposeModel(binder, behaviour);
+            }));
+        }
+
+        private static void DisposeModel(Binder binder, SpiderBehaviour behaviour)
+        {
+            binder.Dispose();
+            Object.Destroy(behaviour.Body);
         }
     }
 }

@@ -16,10 +16,5 @@ namespace Core.Models.Stats
         {
             Value += delta;
         }
-
-        public bool IsAlive()
-        {
-            return Value > 0;
-        }
     }
 }

@@ -24,17 +24,29 @@ namespace Core.Models.Systems
 
         public void TryDamage()
         {
-            if (_time > Time.time)
+            if (NotReadyToAttack())
                 return;
+
+            var filters = SetFiltersForTarget();
             
-            var filterTag = new Filter<Spider>((spider) => spider.Stats.Tag == SpiderTag.Enemy);
-            var filterCollision = new Filter<Spider>((spider) =>
-                _collisionService.HasCollision(_model.Components.Collider, spider.Components.Collider));
-            
-            if (_damageReceiverService.TryPerform(_model.Stats.Damage.Value, filterTag, filterCollision))
+            if (_damageReceiverService.TryPerform(_model.Stats.Damage.Value, filters))
             {
                 _time = Time.time + _attackCooldown;
             }
+        }
+
+        private bool NotReadyToAttack()
+        {
+            return _time > Time.time;
+        }
+
+        private IFilter[] SetFiltersForTarget()
+        {
+            var filterTag = new Filter<Spider>((spider) => spider.Stats.Tag == SpiderTag.Enemy);
+            var filterCollision = new Filter<Spider>((spider) =>
+                _collisionService.HasCollision(_model.Components.Collider, spider.Components.Collider));
+
+            return new[] {filterTag, filterCollision};
         }
     }
 }

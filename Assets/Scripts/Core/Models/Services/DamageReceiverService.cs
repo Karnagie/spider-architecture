@@ -15,13 +15,13 @@ namespace Core.Models.Services
             _binderService = binderService;
         }
 
-        public bool TryPerform(int value, params IFilter[] filters)
+        public bool TryPerform(int damage, params IFilter[] filters)
         {
             var gotDamage = false;
             var receiver  = _binderService.Find<IDamageReceiver>(filters);
             if(receiver != null)
             {
-                receiver.GetDamage(value);
+                receiver.GetDamage(damage);
                 gotDamage = true;
             }
             

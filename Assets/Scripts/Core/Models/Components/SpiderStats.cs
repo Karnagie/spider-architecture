@@ -8,6 +8,7 @@ namespace Core.Models.Components
     {
         public IntStat Health;
         public IntStat Damage;
+        public FloatStat Timer = new FloatStat(30);
 
         public SpiderStats(int health, int damage, SpiderTag tag)
         {
