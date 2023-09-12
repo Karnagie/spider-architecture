@@ -1,7 +1,9 @@
 ﻿using Core.Models;
 using Infrastructure.Factories;
 using Infrastructure.Helpers;
+using Infrastructure.Services.Binding;
 using Infrastructure.Services.Input;
+using Infrastructure.Services.System;
 using UI;
 using UnityEngine;
 using Zenject;
@@ -13,15 +15,17 @@ namespace Infrastructure.States
         private readonly GameStateMachine _gameStateMachine;
         private readonly SceneLoader _sceneLoader;
         private readonly LoadingCurtain _loadingCurtain;
-        private readonly SpiderFactory _gameFactory;
+        private readonly SpiderFactory _spiderFactory;
+        private GameFactory _gameFactory;
 
         public LoadLevelState(GameStateMachine gameStateMachine, SceneLoader sceneLoader, LoadingCurtain loadingCurtain,
-            SpiderFactory gameFactory)
+            SpiderFactory spiderFactory, GameFactory gameFactory)
         {
+            _gameFactory = gameFactory;
             _loadingCurtain = loadingCurtain;
             _sceneLoader = sceneLoader;
             _gameStateMachine = gameStateMachine;
-            _gameFactory = gameFactory;
+            _spiderFactory = spiderFactory;
         }
 
         public void Enter(string sceneName)
@@ -44,8 +48,9 @@ namespace Infrastructure.States
 
         private void CreatePlayerSpider()
         {
-            _gameFactory.CreatePlayer(new Vector3(0, 0, 0));
-            _gameFactory.CreateEnemy(new Vector3(1, 1, 0));
+            _gameFactory.CreateWorld();
+            _spiderFactory.CreatePlayer(new Vector3(0, 0, 0));
+            _spiderFactory.CreateEnemy(new Vector3(1, 1, 0));
         }
 
         public class Factory : PlaceholderFactory<GameStateMachine, SceneLoader, LoadingCurtain, LoadLevelState>

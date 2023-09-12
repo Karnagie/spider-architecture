@@ -6,6 +6,7 @@ using Core.Behaviours;
 using Core.Models;
 using Core.Models.Components;
 using Core.Models.Services;
+using Core.Models.Systems;
 using Infrastructure.Helpers;
 using Infrastructure.Services.Binding;
 using Infrastructure.Services.Input;
@@ -21,15 +22,18 @@ namespace Infrastructure.Factories
     public class SpiderFactory
     {
         private readonly ViewFactory _viewFactory;
-        private IInputService _inputService;
-        private ServiceComponentFactory _serviceSystemFactory;
-        private SystemService _systemService;
+        private readonly IInputService _inputService;
+        private readonly ServiceSystemFactory _serviceSystemFactory;
+        private readonly SystemService _systemService;
+        private SpiderLegFactory _spiderLegFactory;
 
         public SpiderFactory(ViewFactory viewFactory,
-            ServiceComponentFactory serviceSystemFactory,
+            ServiceSystemFactory serviceSystemFactory,
             IInputService inputService,
-            SystemService systemService)
+            SystemService systemService,
+            SpiderLegFactory spiderLegFactory)
         {
+            _spiderLegFactory = spiderLegFactory;
             _systemService = systemService;
             _inputService = inputService;
             _serviceSystemFactory = serviceSystemFactory;
@@ -38,8 +42,7 @@ namespace Infrastructure.Factories
 
         public void CreatePlayer(Vector3 position)
         {
-            var behaviour = _viewFactory.DefaultSpider();
-            behaviour.Transform.position = position;
+            var behaviour = _viewFactory.DefaultSpider(position);
             
             var stats = new SpiderStats(100, 10, SpiderTag.Player);
             var components = new SpiderComponents(behaviour.Transform, behaviour.Collider, behaviour.Rigidbody);
@@ -53,8 +56,7 @@ namespace Infrastructure.Factories
         
         public void CreateEnemy(Vector3 position)
         {
-            var behaviour = _viewFactory.DefaultSpider();
-            behaviour.Transform.position = position;
+            var behaviour = _viewFactory.DefaultSpider(position);
             
             var stats = new SpiderStats(50, 5, SpiderTag.Enemy);
             var components = new SpiderComponents(behaviour.Transform, behaviour.Collider, behaviour.Rigidbody);
@@ -95,12 +97,21 @@ namespace Infrastructure.Factories
 
         private void BindSpider(Spider model, Binder binder, SpiderBehaviour behaviour, SystemLinker linker)
         {
+            var leg = _spiderLegFactory.Create(model);
+            linker.Add(leg);
+            
             binder.Bind(model.Stats.Health, (health => behaviour.HealthText.text = $"hp: {health}"));
             binder.Bind(model.Stats.Health, (health =>
             {
                 if (health > 0) return;
                 DisposeModel(binder, behaviour);
+                leg.Dispose();
             }));
+            binder.Bind(behaviour.OnDestroyAsObservable(), unit =>
+            {
+                binder.Dispose();
+                leg.Dispose();
+            });
             
             binder.LinkHolder(_systemService, linker);
         }
@@ -109,6 +120,25 @@ namespace Infrastructure.Factories
         {
             binder.Dispose();
             Object.Destroy(behaviour.Body);
+        }
+    }
+
+    public class SpiderLegFactory
+    {
+        private PhysicsService _physicsService;
+        private ViewFactory _viewFactory;
+
+        public SpiderLegFactory(PhysicsService physicsService, ViewFactory viewFactory)
+        {
+            _viewFactory = viewFactory;
+            _physicsService = physicsService;
+        }
+        
+        public LegSystem Create(Spider model)
+        {
+            var behaviour = _viewFactory.DefaultSpiderLeg(model.Components.Transform.position);
+            
+            return new LegSystem(model, _physicsService, 1, behaviour);
         }
     }
 }

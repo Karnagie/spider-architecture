@@ -1,4 +1,6 @@
-﻿using Core.Models.Systems;
+﻿using System.Collections.Generic;
+using Core.Models.Systems;
+using Infrastructure.Services.Binding;
 using Infrastructure.Services.System;
 using UnityEngine;
 
@@ -23,14 +25,22 @@ namespace Core.Models.Services
             var linkers = _systemService.LinkersThatHas(system);
             foreach (var linker in linkers)
             {
-                if(!linker.TryGetSystem<Spider>(out var spider))
+                if(!linker.TryGetSystems<Spider>(out var spider))
                     return;
                 
-                if (linker.TryGetSystem<IPhysicBody>(out var body))
+                if (linker.TryGetSystems<IPhysicBody>(out var bodies))
                 {
-                    body.Push(CalculateForce(spider, pusher)*5, ForceMode2D.Impulse);
+                    foreach (var body in bodies)
+                    {
+                        body.Push(CalculateForce(spider[0], pusher)*5, ForceMode2D.Impulse);   
+                    }
                 }
             }
+        }
+
+        public IPhysicBody[] All(params IFilter[] filters)
+        {
+            return _systemService.TryFindSystems<IPhysicBody>(filters);
         }
 
         private Vector2 CalculateForce(Spider target, Spider pusher)

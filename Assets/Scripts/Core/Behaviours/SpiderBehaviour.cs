@@ -8,6 +8,7 @@ namespace Core.Behaviours
     {
         public GameObject Body;
         public TMP_Text HealthText;
+        public SpiderLegBehaviour _legBehaviour;
         
         public Transform Transform;
         public Collider2D Collider;

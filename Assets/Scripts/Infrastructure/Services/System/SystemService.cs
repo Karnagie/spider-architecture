@@ -18,9 +18,9 @@ namespace Infrastructure.Services.System
                 if (!Met(linker, filters))
                     continue;
                 
-                if (linker.TryGetSystem(out TReturn system))
+                if (linker.TryGetSystems(out TReturn[] systems))
                 {
-                    targets.Add(system);
+                    targets.AddRange(systems);
                 }
             }
 

@@ -35,12 +35,14 @@ namespace Infrastructure.DI
             Container.Bind<PhysicsService>().To<PhysicsService>().AsSingle();
             Container.Bind<SpiderService>().To<SpiderService>().AsSingle();
             Container.Bind<SystemService>().To<SystemService>().AsSingle();
+            Container.Bind<SpiderLegFactory>().To<SpiderLegFactory>().AsSingle();
+            Container.Bind<GameFactory>().To<GameFactory>().AsSingle();
 
             //Factories
             RegisterGameFactories();
             RegisterSpiderFactory();
             Container.Bind<ViewFactory>().To<ViewFactory>().AsSingle();
-            Container.Bind<ServiceComponentFactory>().To<ServiceComponentFactory>().AsSingle();
+            Container.Bind<ServiceSystemFactory>().To<ServiceSystemFactory>().AsSingle();
         }
 
         private void Update()

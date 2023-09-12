@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Core.Models.Systems;
 
 namespace Infrastructure.Services.System
@@ -25,6 +26,22 @@ namespace Infrastructure.Services.System
             }
 
             return false;
+        }
+        
+        public bool TryGetSystems<T>(out T[] foundSystems)
+        {
+            var systems = new List<T>();
+            foreach (var system in _systems)
+            {
+                if (system is T typedSystem)
+                {
+                    systems.Add(typedSystem);
+                }
+            }
+
+            foundSystems = systems.ToArray();
+            
+            return systems.Count > 0;
         }
 
         public bool Has(ISystem findingSystem)
