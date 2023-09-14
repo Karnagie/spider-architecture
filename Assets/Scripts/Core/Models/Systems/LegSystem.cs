@@ -8,7 +8,6 @@ namespace Core.Models.Systems
 {
     public class LegSystem : ITickable, ISystem
     {
-        private Spider _model;
         private PhysicsService _physicsService;
         private float _length;
         private Transform _startLeg;
@@ -16,24 +15,21 @@ namespace Core.Models.Systems
         private Transform _pivot;
         private SpiderLegBehaviour _behaviour;
 
-        public LegSystem(Spider model, PhysicsService physicsService, float length, SpiderLegBehaviour behaviour)
+        public LegSystem(PhysicsService physicsService, float length, SpiderLegBehaviour behaviour)
         {
             _behaviour = behaviour;
             _pivot = _behaviour.TargetPivot;
             _startLeg = _behaviour.Transform;
             _length = length;
             _physicsService = physicsService;
-            _model = model;
         }
         
         public void Tick()
         {
             TryConnect();
-
-            _model.Components.Rigidbody.bodyType = Connecting() ? RigidbodyType2D.Static : RigidbodyType2D.Dynamic;
         }
-
-        private bool Connecting()
+        
+        public bool Connecting()
         {
             return Vector2.Distance(_connectedPosition, _startLeg.position) < _length;
         }
@@ -49,7 +45,6 @@ namespace Core.Models.Systems
 
             var targetBody = FindClosest(collided);
             var targetPosition = targetBody.ClosestPointTo(_startLeg.position);
-            
             if(IsClose(targetPosition) == false)
                 return;
 
@@ -77,7 +72,7 @@ namespace Core.Models.Systems
 
         private bool IsClose(Vector3 position)
         {
-            return Vector3.Distance(position, _model.Components.Transform.position) <= _length;
+            return Vector3.Distance(position, _startLeg.position) <= _length;
         }
 
         public void Dispose()

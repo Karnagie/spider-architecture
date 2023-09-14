@@ -31,7 +31,7 @@ namespace Infrastructure.Factories
         {
             SpiderLegBehaviour prefab = _assetProvider.Instantiate<SpiderLegBehaviour>(DefaultSpiderLegPath);
             prefab.Transform.SetParent(parent);
-            prefab.Transform.position = Vector3.zero;
+            prefab.Transform.localPosition = Vector3.zero;
             
             return prefab;
         }

@@ -96,8 +96,14 @@ namespace Infrastructure.Factories
 
         private void BindSpider(Spider model, Binder binder, SpiderBehaviour behaviour, SystemLinker linker)
         {
-            var leg = _spiderLegFactory.Create(model);
-            binder.LinkHolder(_systemService, leg);
+            var leg = _spiderLegFactory.Create(model, behaviour.LegLeft);
+            linker.Add(leg);
+            
+            var leg1 = _spiderLegFactory.Create(model, behaviour.LegRight);
+            linker.Add(leg1);
+
+            var walker = _serviceSystemFactory.SpiderWalker(model);
+            linker.Add(walker);
 
             binder.Bind(model.Stats.Health, (health => behaviour.HealthText.text = $"hp: {health}"));
 

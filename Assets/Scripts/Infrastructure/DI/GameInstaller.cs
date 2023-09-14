@@ -1,6 +1,7 @@
 ﻿using System;
 using CompositeDirectorWithGeneratingComposites.CompositeDirector;
 using Core.Models.Services;
+using Core.Models.Systems;
 using Data;
 using Infrastructure.AssetManagement;
 using Infrastructure.Factories;
@@ -36,6 +37,7 @@ namespace Infrastructure.DI
             Container.Bind<SpiderService>().To<SpiderService>().AsSingle();
             Container.Bind<SystemService>().To<SystemService>().AsSingle();
             Container.BindInterfacesAndSelfTo<DeathService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<SpiderLegService>().AsSingle();
 
             //Factories
             Container.Bind<GameFactory>().To<GameFactory>().AsSingle();

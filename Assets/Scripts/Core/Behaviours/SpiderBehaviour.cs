@@ -6,9 +6,9 @@ namespace Core.Behaviours
 {
     public class SpiderBehaviour : MonoBehaviour
     {
-        public GameObject Body;
         public TMP_Text HealthText;
-        public SpiderLegBehaviour _legBehaviour;
+        public Transform LegLeft;
+        public Transform LegRight;
         
         public Transform Transform;
         public Collider2D Collider;

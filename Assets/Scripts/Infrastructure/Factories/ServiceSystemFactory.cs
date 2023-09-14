@@ -3,6 +3,7 @@ using Core.Models.Services;
 using Core.Models.Systems;
 using Infrastructure.Services.Binding;
 using Infrastructure.Services.Input;
+using Infrastructure.Services.System;
 using UnityEngine;
 using Zenject;
 
@@ -14,12 +15,14 @@ namespace Infrastructure.Factories
         private SpiderService _spiderService;
         private PhysicsService _physicsService;
         private DamageReceiverService _damageReceiverService;
+        private SpiderLegService _spiderLegService;
 
-        public ServiceSystemFactory(IInputService inputService, SpiderService spiderService, PhysicsService physicsService, DamageReceiverService damageReceiverService)
+        public ServiceSystemFactory(IInputService inputService, SpiderService spiderService, PhysicsService physicsService, DamageReceiverService damageReceiverService, SystemService systemService, SpiderLegService spiderLegService)
         {
             _spiderService = spiderService;
             _physicsService = physicsService;
             _damageReceiverService = damageReceiverService;
+            _spiderLegService = spiderLegService;
             _inputService = inputService;
         }
 
@@ -61,6 +64,11 @@ namespace Infrastructure.Factories
         public ISystem DefaultWorld(Collider2D[] colliders)
         {
             return new DefaultWorld(colliders);
+        }
+
+        public ISystem SpiderWalker(Spider model)
+        {
+            return new SpiderWalker(model, _spiderLegService);
         }
     }
 }

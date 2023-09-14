@@ -27,27 +27,6 @@ namespace Infrastructure.Services.System
             return targets.ToArray();
         }
 
-        private bool Met(SystemLinker linker, IFilter[] filters)
-        {
-            foreach (var filter in filters)
-            {
-                if (!filter.Met(linker))
-                    return false;
-            }
-
-            return true;
-        }
-
-        public void Add(SystemLinker item)
-        {
-            _linkedSystems.Add(item);
-        }
-
-        public void Remove(SystemLinker item)
-        {
-            _linkedSystems.Remove(item);
-        }
-
         public SystemLinker[] LinkersThatHas(ISystem system)
         {
             List<SystemLinker> linkers = new();
@@ -60,6 +39,27 @@ namespace Infrastructure.Services.System
             }
 
             return linkers.ToArray();
+        }
+
+        public void Add(SystemLinker item)
+        {
+            _linkedSystems.Add(item);
+        }
+
+        public void Remove(SystemLinker item)
+        {
+            _linkedSystems.Remove(item);
+        }
+
+        private bool Met(SystemLinker linker, IFilter[] filters)
+        {
+            foreach (var filter in filters)
+            {
+                if (!filter.Met(linker))
+                    return false;
+            }
+
+            return true;
         }
     }
 }
