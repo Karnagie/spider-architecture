@@ -2,6 +2,9 @@
 using Core.Models;
 using Core.Models.Services;
 using Core.Models.Systems;
+using Infrastructure.Services.Binding;
+using Infrastructure.Services.System;
+using UnityEngine;
 
 namespace Infrastructure.Factories
 {
@@ -16,9 +19,17 @@ namespace Infrastructure.Factories
             _physicsService = physicsService;
         }
         
-        public LegSystem Create(Spider model, SpiderLegBehaviour behaviour)
+        public SystemLinker Create(Spider model)
         {
-            return new LegSystem(model, _physicsService, 1, behaviour);
+            var behaviour = _viewFactory.DefaultSpiderLeg(model.Components.Transform);
+            var binder = new Binder();//add to service
+            var linker = new SystemLinker();
+
+            var legSystem = new LegSystem(model, _physicsService, 1, behaviour);
+            linker.Add(legSystem);
+            binder.LinkEvent(model.Killed, () => Object.Destroy(behaviour.gameObject));
+            
+            return linker;
         }
     }
 }

@@ -97,17 +97,15 @@ namespace Infrastructure.Factories
 
         private void BindSpider(Spider model, Binder binder, SpiderBehaviour behaviour, SystemLinker linker)
         {
-            var legBehaviour = _viewFactory.DefaultSpiderLeg(model.Components.Transform);
-            var leg = _spiderLegFactory.Create(model, legBehaviour);
-            linker.Add(leg);
-            
+            var leg = _spiderLegFactory.Create(model);
+            binder.LinkHolder(_systemService, leg);
+
             binder.Bind(model.Stats.Health, (health => behaviour.HealthText.text = $"hp: {health}"));
-            
+
             binder.LinkHolder(_systemService, linker);
-            
+
             binder.LinkEvent(model.Killed, binder.Dispose);
             binder.LinkEvent(model.Killed, (() => Object.Destroy(behaviour.gameObject)));
-            binder.LinkEvent(model.Killed, (() => Object.Destroy(legBehaviour.gameObject)));
         }
     }
 
