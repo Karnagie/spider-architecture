@@ -1,10 +1,11 @@
 ﻿using System;
+using Core.Models.Systems;
 using Infrastructure.Services.System;
 using UnityEngine;
 
 namespace Infrastructure.Services.Binding
 {
-    public class Filter<T> : IFilter where T : class
+    public class Filter<T> : IFilter where T : class, ISingleSystem
     {
         private Func<T, bool> _condition;
 

@@ -3,4 +3,8 @@
     public interface ISystem
     {
     }
+    
+    public interface ISingleSystem : ISystem
+    {
+    }
 }

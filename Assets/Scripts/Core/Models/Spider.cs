@@ -6,7 +6,7 @@ using Infrastructure.Services.Binding;
 
 namespace Core.Models
 {
-    public class Spider : ICommandHandler<ISpiderCommand>, ISystem
+    public class Spider : ICommandHandler<ISpiderCommand>, ISingleSystem
     {
         public SpiderStats Stats;
         public SpiderComponents Components;

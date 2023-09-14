@@ -8,14 +8,10 @@ namespace Infrastructure.Services.Ticking
     public class TickService : ITickable, IFixedTickable
     {
         private SystemService _systemService;
-        private Filter<ITickable> _tickFilter;
-        private Filter<IFixedTickable> _fixedTickFilter;
 
         public TickService(SystemService systemService)
         {
             _systemService = systemService;
-            _tickFilter = new Filter<ITickable>();
-            _fixedTickFilter = new Filter<IFixedTickable>();
         }
         
         public void Tick()

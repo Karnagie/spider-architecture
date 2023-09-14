@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.Models.Systems;
+using UnityEngine;
 
 namespace Infrastructure.Services.System
 {
@@ -10,10 +11,21 @@ namespace Infrastructure.Services.System
 
         public void Add(ISystem system)
         {
+            if (system is ISingleSystem)
+            {
+                foreach (var system1 in _systems)
+                {
+                    if (system1.GetType() != system.GetType()) 
+                        continue;
+                    
+                    Debug.LogError($"There is can be only one system '{system1.GetType() }'");
+                    return;
+                }
+            }
             _systems.Add(system);
         }
         
-        public bool TryGetSystem<T>(out T foundSystem)
+        public bool TryGetSystem<T>(out T foundSystem) where T : ISingleSystem
         {
             foundSystem = default;
             foreach (var system in _systems)
