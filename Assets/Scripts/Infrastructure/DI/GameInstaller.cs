@@ -35,15 +35,15 @@ namespace Infrastructure.DI
             Container.Bind<PhysicsService>().To<PhysicsService>().AsSingle();
             Container.Bind<SpiderService>().To<SpiderService>().AsSingle();
             Container.Bind<SystemService>().To<SystemService>().AsSingle();
-            Container.Bind<SpiderLegFactory>().To<SpiderLegFactory>().AsSingle();
-            Container.Bind<GameFactory>().To<GameFactory>().AsSingle();
             Container.BindInterfacesAndSelfTo<DeathService>().AsSingle();
 
             //Factories
-            RegisterGameFactories();
+            Container.Bind<GameFactory>().To<GameFactory>().AsSingle();
+            RegisterGameStateFactories();
             RegisterSpiderFactory();
             Container.Bind<ViewFactory>().To<ViewFactory>().AsSingle();
             Container.Bind<ServiceSystemFactory>().To<ServiceSystemFactory>().AsSingle();
+            Container.Bind<SpiderLegFactory>().To<SpiderLegFactory>().AsSingle();
         }
 
         private void Update()
@@ -71,7 +71,7 @@ namespace Infrastructure.DI
         private void RegisterPersistentProgressService() => 
             Container.Bind<IPersistentProgressService>().To<PersistentProgressService>().AsSingle();
 
-        private void RegisterGameFactories() => 
+        private void RegisterGameStateFactories() => 
             Container.BindFactory<GameStateMachine, SceneLoader, LoadingCurtain, LoadLevelState, LoadLevelState.Factory>();
 
         private void RegisterLoadingCurtain() => Container.Bind<LoadingCurtain>().To<LoadingCurtain>().AsSingle();

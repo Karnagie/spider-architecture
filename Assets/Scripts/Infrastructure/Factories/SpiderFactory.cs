@@ -14,7 +14,6 @@ using UniRx;
 using UniRx.Triggers;
 using Unity.VisualScripting;
 using UnityEngine;
-using Zenject;
 using Object = UnityEngine.Object;
 
 namespace Infrastructure.Factories
@@ -106,28 +105,6 @@ namespace Infrastructure.Factories
 
             binder.LinkEvent(model.Killed, binder.Dispose);
             binder.LinkEvent(model.Killed, (() => Object.Destroy(behaviour.gameObject)));
-        }
-    }
-
-    public class DeathService : ITickable
-    {
-        private SystemService _systemService;
-
-        public DeathService(SystemService systemService)
-        {
-            _systemService = systemService;
-        }
-        
-        public void Tick()
-        {
-            var models = _systemService.TryFindSystems<Spider>();//change spider to ialive with health
-            foreach (var model in models)
-            {
-                if (model.Stats.Health.Value <= 0)
-                {
-                    model.Kill();
-                }
-            }
         }
     }
 }
