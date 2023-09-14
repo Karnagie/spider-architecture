@@ -6,6 +6,7 @@ using Core.Behaviours;
 using Core.Models;
 using Core.Models.Components;
 using Infrastructure.Helpers;
+using Infrastructure.Services;
 using Infrastructure.Services.Binding;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.System;
@@ -13,6 +14,7 @@ using UniRx;
 using UniRx.Triggers;
 using Unity.VisualScripting;
 using UnityEngine;
+using Zenject;
 using Object = UnityEngine.Object;
 
 namespace Infrastructure.Factories
@@ -95,29 +97,39 @@ namespace Infrastructure.Factories
 
         private void BindSpider(Spider model, Binder binder, SpiderBehaviour behaviour, SystemLinker linker)
         {
-            var leg = _spiderLegFactory.Create(model);
+            var legBehaviour = _viewFactory.DefaultSpiderLeg(model.Components.Transform);
+            var leg = _spiderLegFactory.Create(model, legBehaviour);
             linker.Add(leg);
             
             binder.Bind(model.Stats.Health, (health => behaviour.HealthText.text = $"hp: {health}"));
-            binder.Bind(model.Stats.Health, (health =>
-            {
-                if (health > 0) return;
-                DisposeModel(binder, behaviour);
-                leg.Dispose();
-            }));
-            binder.Bind(behaviour.OnDestroyAsObservable(), unit =>
-            {
-                binder.Dispose();
-                leg.Dispose();
-            });
             
             binder.LinkHolder(_systemService, linker);
+            
+            binder.LinkEvent(model.Killed, binder.Dispose);
+            binder.LinkEvent(model.Killed, (() => Object.Destroy(behaviour.gameObject)));
+            binder.LinkEvent(model.Killed, (() => Object.Destroy(legBehaviour.gameObject)));
+        }
+    }
+
+    public class DeathService : ITickable
+    {
+        private SystemService _systemService;
+
+        public DeathService(SystemService systemService)
+        {
+            _systemService = systemService;
         }
         
-        private static void DisposeModel(Binder binder, SpiderBehaviour behaviour)
+        public void Tick()
         {
-            binder.Dispose();
-            Object.Destroy(behaviour.Body);
+            var models = _systemService.TryFindSystems<Spider>();//change spider to ialive with health
+            foreach (var model in models)
+            {
+                if (model.Stats.Health.Value <= 0)
+                {
+                    model.Kill();
+                }
+            }
         }
     }
 }

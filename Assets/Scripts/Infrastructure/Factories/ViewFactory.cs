@@ -27,10 +27,11 @@ namespace Infrastructure.Factories
             return prefab;
         }
         
-        public SpiderLegBehaviour DefaultSpiderLeg(Vector3 position)
+        public SpiderLegBehaviour DefaultSpiderLeg(Transform parent)
         {
             SpiderLegBehaviour prefab = _assetProvider.Instantiate<SpiderLegBehaviour>(DefaultSpiderLegPath);
-            prefab.Transform.position = position;
+            prefab.Transform.SetParent(parent);
+            prefab.Transform.position = Vector3.zero;
             
             return prefab;
         }

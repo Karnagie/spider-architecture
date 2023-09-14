@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.Behaviours;
+using Core.Models;
 using Core.Models.Services;
 using Core.Models.Systems;
 
@@ -15,10 +16,8 @@ namespace Infrastructure.Factories
             _physicsService = physicsService;
         }
         
-        public LegSystem Create(Spider model)
+        public LegSystem Create(Spider model, SpiderLegBehaviour behaviour)
         {
-            var behaviour = _viewFactory.DefaultSpiderLeg(model.Components.Transform.position);
-            
             return new LegSystem(model, _physicsService, 1, behaviour);
         }
     }

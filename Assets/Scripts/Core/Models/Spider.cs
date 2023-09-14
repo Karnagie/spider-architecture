@@ -2,6 +2,7 @@
 using Core.Models.Commands;
 using Core.Models.Components;
 using Core.Models.Systems;
+using Infrastructure.Helpers;
 using Infrastructure.Services.Binding;
 
 namespace Core.Models
@@ -10,6 +11,8 @@ namespace Core.Models
     {
         public SpiderStats Stats;
         public SpiderComponents Components;
+
+        public Observable Killed = new(); 
 
         public Spider(SpiderStats stats, SpiderComponents components)
         {
@@ -20,6 +23,11 @@ namespace Core.Models
         public void Perform(ISpiderCommand command)
         {
             command.Perform(this);
+        }
+
+        public void Kill()
+        {
+            Killed.Invoke();
         }
     }
 }

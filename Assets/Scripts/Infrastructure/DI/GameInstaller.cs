@@ -37,6 +37,7 @@ namespace Infrastructure.DI
             Container.Bind<SystemService>().To<SystemService>().AsSingle();
             Container.Bind<SpiderLegFactory>().To<SpiderLegFactory>().AsSingle();
             Container.Bind<GameFactory>().To<GameFactory>().AsSingle();
+            Container.BindInterfacesAndSelfTo<DeathService>().AsSingle();
 
             //Factories
             RegisterGameFactories();

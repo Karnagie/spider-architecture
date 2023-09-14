@@ -28,8 +28,6 @@ namespace Core.Models.Systems
         
         public void Tick()
         {
-            _startLeg.position = _model.Components.Transform.position;
-
             TryConnect();
 
             _model.Components.Rigidbody.bodyType = Connecting() ? RigidbodyType2D.Static : RigidbodyType2D.Dynamic;
