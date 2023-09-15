@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Core.Behaviours
@@ -8,6 +10,7 @@ namespace Core.Behaviours
         public float Length = 1;
         public Transform Transform;
         public Transform TargetPivot;
+        public GameObject[] Ragdoll;
 
         private void OnDrawGizmos()
         {

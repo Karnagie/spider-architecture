@@ -25,9 +25,22 @@ namespace Infrastructure.Factories
             var binder = new Binder();//add to service
 
             var legSystem = new LegSystem(_physicsService, behaviour.Length, behaviour);
-            binder.LinkEvent(model.Killed, () => Object.Destroy(behaviour.gameObject));
+            binder.LinkEvent(model.Killed, () =>
+            {
+                EnableRagdoll(behaviour);
+            });
             
             return legSystem;
+        }
+
+        private void EnableRagdoll(SpiderLegBehaviour behaviour)
+        {
+            foreach (var gameObject in behaviour.Ragdoll)
+            {
+                gameObject.transform.SetParent(null);
+                gameObject.SetActive(true);
+            }
+            Object.Destroy(behaviour.gameObject);
         }
     }
 }
