@@ -1,4 +1,3 @@
-using CompositeDirectorWithGeneratingComposites.CompositeDirector;
 using Core.Behaviours;
 using Infrastructure.AssetManagement;
 using UnityEngine;

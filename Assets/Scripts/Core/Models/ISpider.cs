@@ -7,12 +7,12 @@ using Infrastructure.Services.Binding;
 
 namespace Core.Models
 {
-    public class Spider : ICommandHandler<ISpiderCommand>, ISingleSystem
+    public class Spider : ISpider, ICommandHandler<ISpiderCommand>
     {
-        public SpiderStats Stats;
-        public SpiderComponents Components;
+        public SpiderStats Stats { get; }
+        public SpiderComponents Components { get; }
 
-        public Observable Killed = new(); 
+        public Observable Killed { get; } = new();
 
         public Spider(SpiderStats stats, SpiderComponents components)
         {
@@ -29,5 +29,15 @@ namespace Core.Models
         {
             Killed.Invoke();
         }
+    }
+
+    public interface ISpider : ISingleSystem
+    {
+        SpiderStats Stats { get; }
+        SpiderComponents Components { get; }
+
+        Observable Killed { get; }
+        
+        void Kill();
     }
 }

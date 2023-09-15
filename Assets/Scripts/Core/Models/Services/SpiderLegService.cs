@@ -12,12 +12,12 @@ namespace Core.Models.Services
             _systemService = systemService;
         }
         
-        public bool IsConnecting(Spider model)
+        public bool IsConnecting(ISpider model)
         {
             var linkers = _systemService.LinkersThatHas(model);
             foreach (var linker in linkers)
             {
-                if (linker.TryGetSystems(out LegSystem[] legs))
+                if (linker.TryGetSystems(out ILegSystem[] legs))
                 {
                     if (IsAnyLegConnecting(legs)) return true;
                 }
@@ -26,7 +26,7 @@ namespace Core.Models.Services
             return false;
         }
         
-        private static bool IsAnyLegConnecting(LegSystem[] legs)
+        private static bool IsAnyLegConnecting(ILegSystem[] legs)
         {
             foreach (var leg in legs)
             {

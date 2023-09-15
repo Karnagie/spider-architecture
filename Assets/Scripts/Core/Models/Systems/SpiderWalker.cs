@@ -6,10 +6,10 @@ namespace Core.Models.Systems
 {
     public class SpiderWalker : ITickable, ISystem
     {
-        private Spider _model;
+        private ISpider _model;
         private SpiderLegService _spiderLegService;
 
-        public SpiderWalker(Spider model, SpiderLegService spiderLegService)
+        public SpiderWalker(ISpider model, SpiderLegService spiderLegService)
         {
             _spiderLegService = spiderLegService;
             _model = model;

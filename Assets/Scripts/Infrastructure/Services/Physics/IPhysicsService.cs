@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Core.Models.Services
 {
-    public class PhysicsService
+    public class PhysicsService : IPhysicsService
     {
         private SystemService _systemService;
 
@@ -20,12 +20,12 @@ namespace Core.Models.Services
             return first.IsTouching(second);
         }
 
-        public void TryPush(ISystem system, Spider pusher)
+        public void TryPush(ISystem system, ISpider pusher)
         {
             var linkers = _systemService.LinkersThatHas(system);
             foreach (var linker in linkers)
             {
-                if(!linker.TryGetSystems<Spider>(out var spider))
+                if(!linker.TryGetSystems<ISpider>(out var spider))
                     return;
                 
                 if (linker.TryGetSystems<IPhysicBody>(out var bodies))
@@ -43,9 +43,16 @@ namespace Core.Models.Services
             return _systemService.TryFindSystems<IPhysicBody>(filters);
         }
 
-        private Vector2 CalculateForce(Spider target, Spider pusher)
+        private Vector2 CalculateForce(ISpider target, ISpider pusher)
         {
             return (target.Components.Transform.position - pusher.Components.Transform.position).normalized;
         }
+    }
+
+    public interface IPhysicsService
+    {
+        bool HasCollision(Collider2D first, Collider2D second);
+        void TryPush(ISystem system, ISpider pusher);
+        IPhysicBody[] All(params IFilter[] filters);
     }
 }

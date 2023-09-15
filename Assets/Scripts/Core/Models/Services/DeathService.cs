@@ -14,7 +14,7 @@ namespace Core.Models.Services
         
         public void Tick()
         {
-            var models = _systemService.TryFindSystems<Spider>();//change spider to ialive with health
+            var models = _systemService.TryFindSystems<ISpider>();//change spider to ialive with health
             foreach (var model in models)
             {
                 if (model.Stats.Health.Value <= 0)

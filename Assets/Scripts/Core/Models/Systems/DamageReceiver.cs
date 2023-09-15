@@ -4,11 +4,11 @@ namespace Core.Models.Systems
 {
     public class DamageReceiver : IDamageReceiver
     {
-        private Spider _model;
+        private ISpider _model;
 
         public SpiderTag Tag => _model.Stats.Tag;
 
-        public DamageReceiver(Spider model)
+        public DamageReceiver(ISpider model)
         {
             _model = model;
         }

@@ -7,9 +7,9 @@ namespace Core.Models.Systems
     public class PlayerMovement : IFixedTickable, ISystem
     {
         private IInputService _inputService;
-        private Spider _model;
+        private ISpider _model;
 
-        public PlayerMovement(IInputService inputService, Spider model)
+        public PlayerMovement(IInputService inputService, ISpider model)
         {   
             _model = model;
             _inputService = inputService;

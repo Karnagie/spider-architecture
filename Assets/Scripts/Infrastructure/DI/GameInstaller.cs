@@ -1,5 +1,4 @@
 ﻿using System;
-using CompositeDirectorWithGeneratingComposites.CompositeDirector;
 using Core.Models.Services;
 using Core.Models.Systems;
 using Data;
@@ -12,7 +11,6 @@ using Infrastructure.Services.PersistentProgress;
 using Infrastructure.Services.System;
 using Infrastructure.Services.Ticking;
 using Infrastructure.States;
-using Plugins.CompositeDirectorPlugin;
 using UI;
 using Zenject;
 
@@ -26,14 +24,13 @@ namespace Infrastructure.DI
             RegisterAssetProvider();
             RegisterSceneLoader();
             RegisterLoadingCurtain();
-            RegisterDirectorAndComposites();
 
             //Services
             RegisterTickService();
             RegisterInputService();
             RegisterPersistentProgressService();
             Container.Bind<DamageReceiverService>().To<DamageReceiverService>().AsSingle();
-            Container.Bind<PhysicsService>().To<PhysicsService>().AsSingle();
+            Container.Bind<IPhysicsService>().To<PhysicsService>().AsSingle();
             Container.Bind<SpiderService>().To<SpiderService>().AsSingle();
             Container.Bind<SystemService>().To<SystemService>().AsSingle();
             Container.BindInterfacesAndSelfTo<DeathService>().AsSingle();
@@ -46,22 +43,6 @@ namespace Infrastructure.DI
             Container.Bind<ViewFactory>().To<ViewFactory>().AsSingle();
             Container.Bind<ServiceSystemFactory>().To<ServiceSystemFactory>().AsSingle();
             Container.Bind<SpiderLegFactory>().To<SpiderLegFactory>().AsSingle();
-        }
-
-        private void Update()
-        {
-            CompositeHelper.Perform();
-        }
-
-        private void OnDestroy()
-        {
-            Container.Resolve<CompositeDirector>().Dispose();
-        }
-        
-        private void RegisterDirectorAndComposites()
-        {
-            var compositeDirector = new CompositeDirector();
-            Container.Bind<CompositeDirector>().FromInstance(compositeDirector).AsSingle();
         }
 
         private void RegisterInputService() => Container.BindInterfacesTo<StandaloneInputService>().AsSingle();

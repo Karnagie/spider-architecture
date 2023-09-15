@@ -11,14 +11,14 @@ namespace Core.Models.Systems
 {
     public class EnemyDamager : IDamager, ITickable
     {
-        private Spider _model;
+        private ISpider _model;
         private DamageReceiverService _damageReceiverService;
-        private PhysicsService _physicsService;
+        private IPhysicsService _physicsService;
         private float _attackCooldown;
         private float _time;
 
-        public EnemyDamager(Spider model, float attackCooldown, 
-            DamageReceiverService damageReceiverService, PhysicsService physicsService)
+        public EnemyDamager(ISpider model, float attackCooldown, 
+            DamageReceiverService damageReceiverService, IPhysicsService physicsService)
         {
             _attackCooldown = attackCooldown;
             _physicsService = physicsService;
@@ -31,8 +31,8 @@ namespace Core.Models.Systems
             if (_time > Time.time)
                 return;
             
-            var filterTag = new Filter<Spider>((spider) => spider.Stats.Tag == SpiderTag.Player);
-            var filterCollision = new Filter<Spider>((spider) =>
+            var filterTag = new Filter<ISpider>((spider) => spider.Stats.Tag == SpiderTag.Player);
+            var filterCollision = new Filter<ISpider>((spider) =>
                 _physicsService.HasCollision(_model.Components.Collider, spider.Components.Collider));
 
             var damaged = _damageReceiverService

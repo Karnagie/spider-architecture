@@ -9,6 +9,7 @@ namespace Core.Behaviours
     {
         public float Length = 1;
         public Transform Transform;
+        public Transform Pole;
         public Transform TargetPivot;
         public GameObject[] Ragdoll;
 

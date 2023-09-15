@@ -13,11 +13,11 @@ namespace Infrastructure.Factories
     {
         private IInputService _inputService;
         private SpiderService _spiderService;
-        private PhysicsService _physicsService;
+        private IPhysicsService _physicsService;
         private DamageReceiverService _damageReceiverService;
         private SpiderLegService _spiderLegService;
 
-        public ServiceSystemFactory(IInputService inputService, SpiderService spiderService, PhysicsService physicsService, DamageReceiverService damageReceiverService, SystemService systemService, SpiderLegService spiderLegService)
+        public ServiceSystemFactory(IInputService inputService, SpiderService spiderService, IPhysicsService physicsService, DamageReceiverService damageReceiverService, SystemService systemService, SpiderLegService spiderLegService)
         {
             _spiderService = spiderService;
             _physicsService = physicsService;
@@ -26,37 +26,37 @@ namespace Infrastructure.Factories
             _inputService = inputService;
         }
 
-        public ISystem PlayerMovement(Spider model)
+        public ISystem PlayerMovement(ISpider model)
         {
             var movement = new PlayerMovement(_inputService, model);
             return movement;
         }
 
-        public ISystem DamageReceiver(Spider model)
+        public ISystem DamageReceiver(ISpider model)
         {
             var damaging = new DamageReceiver(model);
             return damaging;
         }
 
-        public ISystem EnemyMovement(Spider model)
+        public ISystem EnemyMovement(ISpider model)
         {
             var movement = new EnemyMovement(model, _spiderService);
             return movement;
         }
 
-        public ISystem EnemyDamager(Spider model, float cooldown)
+        public ISystem EnemyDamager(ISpider model, float cooldown)
         {
             var damager = new EnemyDamager(model, cooldown, _damageReceiverService, _physicsService);
             return damager;
         }
 
-        public IDamager PlayerDamager(Spider model, int cooldown)
+        public IDamager PlayerDamager(ISpider model, int cooldown)
         {
             var damager = new PlayerDamager(model, cooldown, _damageReceiverService, _physicsService);
             return damager;
         }
 
-        public ISystem DefaultBody(Spider model)
+        public ISystem DefaultBody(ISpider model)
         {
             return new DefaultBody(model.Components.Rigidbody, model.Components.Collider);
         }
@@ -66,7 +66,7 @@ namespace Infrastructure.Factories
             return new DefaultWorld(colliders);
         }
 
-        public ISystem SpiderWalker(Spider model)
+        public ISystem SpiderWalker(ISpider model)
         {
             return new SpiderWalker(model, _spiderLegService);
         }

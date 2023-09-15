@@ -10,24 +10,32 @@ namespace Infrastructure.Factories
 {
     public class SpiderLegFactory
     {
-        private PhysicsService _physicsService;
+        private IPhysicsService _physicsService;
         private ViewFactory _viewFactory;
         private SystemService _systemService;
 
-        public SpiderLegFactory(PhysicsService physicsService, ViewFactory viewFactory, SystemService systemService)
+        public SpiderLegFactory(IPhysicsService physicsService, ViewFactory viewFactory, SystemService systemService)
         {
             _systemService = systemService;
             _viewFactory = viewFactory;
             _physicsService = physicsService;
         }
         
-        public void CreateAndConnect(Spider model, Transform parent)
+        public void CreateAndConnect(ISpider model, Transform parent, bool invert)
         {
             var behaviour = _viewFactory.DefaultSpiderLeg(parent);
+            if (invert)
+            {
+                var polePosition = behaviour.Pole.localPosition;
+                polePosition.x = -polePosition.x;
+                behaviour.Pole.localPosition = polePosition;
+            }
+            
             var binder = new Binder();//add to service
             var linker = new SystemLinker();
 
             var legSystem = new LegSystem(_physicsService, behaviour.Length, behaviour);
+            
             binder.LinkEvent(model.Killed, () =>
             {
                 EnableRagdoll(behaviour);

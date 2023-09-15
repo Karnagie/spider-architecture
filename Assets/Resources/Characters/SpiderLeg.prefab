@@ -720,6 +720,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Length: 0.81
   Transform: {fileID: 7827790842121310125}
+  Pole: {fileID: 7442187939939192263}
   TargetPivot: {fileID: 4231569167301368593}
   Ragdoll:
   - {fileID: 1408640488082070109}

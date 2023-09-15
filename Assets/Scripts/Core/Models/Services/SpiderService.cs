@@ -15,9 +15,9 @@ namespace Core.Models.Services
             _systemService = systemService;
         }
         
-        public bool TryFind(SpiderTag tag, out Spider spider)
+        public bool TryFind(SpiderTag tag, out ISpider spider)
         {
-            var spiders = _systemService.TryFindSystems<Spider>();
+            var spiders = _systemService.TryFindSystems<ISpider>();
             
             var found = spiders.FirstOrDefault((spider1 => spider1.Stats.Tag == tag));
             if (found != default)

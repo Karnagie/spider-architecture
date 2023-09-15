@@ -6,16 +6,16 @@ using Zenject;
 
 namespace Core.Models.Systems
 {
-    public class LegSystem : ITickable, ISystem
+    public class LegSystem : ITickable, ILegSystem
     {
-        private PhysicsService _physicsService;
+        private IPhysicsService _physicsService;
         private float _length;
         private Transform _startLeg;
         private Vector3 _connectedPosition;
         private Transform _pivot;
         private SpiderLegBehaviour _behaviour;
 
-        public LegSystem(PhysicsService physicsService, float length, SpiderLegBehaviour behaviour)
+        public LegSystem(IPhysicsService physicsService, float length, SpiderLegBehaviour behaviour)
         {
             _behaviour = behaviour;
             _pivot = _behaviour.TargetPivot;
@@ -79,5 +79,10 @@ namespace Core.Models.Systems
         {
             Object.Destroy(_behaviour);
         }
+    }
+
+    public interface ILegSystem : ISystem
+    {
+        bool Connecting();
     }
 }

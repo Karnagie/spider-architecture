@@ -67,7 +67,7 @@ namespace Infrastructure.Factories
             BindSpider(model, binder, behaviour, linker);
         }
 
-        private void LinkPlayerSystems(Spider model, Binder binder, SystemLinker linker)
+        private void LinkPlayerSystems(ISpider model, Binder binder, SystemLinker linker)
         {
             var damager = _serviceSystemFactory.PlayerDamager(model, 1);
             var playerMovement = _serviceSystemFactory.PlayerMovement(model);
@@ -80,7 +80,7 @@ namespace Infrastructure.Factories
             linker.Add(model);
         }
         
-        private void LinkEnemySystems(Spider model, SystemLinker linker)
+        private void LinkEnemySystems(ISpider model, SystemLinker linker)
         {
             var damager = _serviceSystemFactory.EnemyDamager(model, 1);
             var damageReceiver = _serviceSystemFactory.DamageReceiver(model);
@@ -94,10 +94,10 @@ namespace Infrastructure.Factories
             linker.Add(physicBody);
         }
 
-        private void BindSpider(Spider model, Binder binder, SpiderBehaviour behaviour, SystemLinker linker)
+        private void BindSpider(ISpider model, Binder binder, SpiderBehaviour behaviour, SystemLinker linker)
         {
-            _spiderLegFactory.CreateAndConnect(model, behaviour.LegLeft);
-            _spiderLegFactory.CreateAndConnect(model, behaviour.LegRight);
+            _spiderLegFactory.CreateAndConnect(model, behaviour.LegLeft, true);
+            _spiderLegFactory.CreateAndConnect(model, behaviour.LegRight, false);
 
             var walker = _serviceSystemFactory.SpiderWalker(model);
             linker.Add(walker);

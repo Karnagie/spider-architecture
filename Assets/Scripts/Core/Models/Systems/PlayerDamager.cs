@@ -7,14 +7,14 @@ namespace Core.Models.Systems
 {
     public class PlayerDamager : IDamager
     {
-        private Spider _model;
+        private ISpider _model;
         private DamageReceiverService _damageReceiverService;
         private float _attackCooldown;
         private float _time;
-        private PhysicsService _physicsService;
+        private IPhysicsService _physicsService;
 
-        public PlayerDamager(Spider model, float attackCooldown, 
-            DamageReceiverService damageReceiverService, PhysicsService physicsService)
+        public PlayerDamager(ISpider model, float attackCooldown, 
+            DamageReceiverService damageReceiverService, IPhysicsService physicsService)
         {
             _physicsService = physicsService;
             _attackCooldown = attackCooldown;
@@ -48,8 +48,8 @@ namespace Core.Models.Systems
 
         private IFilter[] SetFiltersForTarget()
         {
-            var filterTag = new Filter<Spider>((spider) => spider.Stats.Tag == SpiderTag.Enemy);
-            var filterCollision = new Filter<Spider>((spider) =>
+            var filterTag = new Filter<ISpider>((spider) => spider.Stats.Tag == SpiderTag.Enemy);
+            var filterCollision = new Filter<ISpider>((spider) =>
                 _physicsService.HasCollision(_model.Components.Collider, spider.Components.Collider));
 
             return new[] {filterTag, filterCollision};
