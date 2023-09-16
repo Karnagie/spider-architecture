@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Infrastructure.Helpers;
+using Infrastructure.Services.Binding;
+using Infrastructure.Services.Ui;
 using Infrastructure.States;
 using UI;
 using Zenject;
@@ -12,14 +14,20 @@ namespace Infrastructure
         private readonly Dictionary<Type, IExitableState> _states;
         private IExitableState _activeState;
 
-        public GameStateMachine(SceneLoader sceneLoader, LoadingCurtain loadingCurtain,
-            LoadLevelState.Factory loadLevelStateFactory, IInitializable initializable)
+        public GameStateMachine(
+            SceneLoader sceneLoader, 
+            LoadingCurtain loadingCurtain,
+            LoadLevelState.Factory loadLevelStateFactory, 
+            IInitializable initializable, 
+            BinderService binderService,
+            WindowService windowService)
         {
             _states = new Dictionary<Type, IExitableState>()
             {
                 [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, initializable),
                 [typeof(LoadLevelState)] = loadLevelStateFactory.Create(this, sceneLoader, loadingCurtain),
-                [typeof(GameLoopState)] = new GameLoopState(this),
+                [typeof(MenuState)]  = new MenuState(this, sceneLoader, loadingCurtain, windowService),
+                [typeof(GameLoopState)] = new GameLoopState(binderService),
             };
         }
 

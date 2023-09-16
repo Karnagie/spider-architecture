@@ -10,6 +10,7 @@ using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
 using Infrastructure.Services.System;
 using Infrastructure.Services.Ticking;
+using Infrastructure.Services.Ui;
 using Infrastructure.States;
 using UI;
 using Zenject;
@@ -35,7 +36,9 @@ namespace Infrastructure.DI
             Container.Bind<SystemService>().To<SystemService>().AsSingle();
             Container.BindInterfacesAndSelfTo<DeathService>().AsSingle();
             Container.BindInterfacesAndSelfTo<SpiderLegService>().AsSingle();
-
+            Container.Bind<BinderService>().To<BinderService>().AsSingle();
+            Container.Bind<WindowService>().To<WindowService>().AsSingle();
+            
             //Factories
             Container.Bind<GameFactory>().To<GameFactory>().AsSingle();
             RegisterGameStateFactories();
@@ -43,6 +46,7 @@ namespace Infrastructure.DI
             Container.Bind<ViewFactory>().To<ViewFactory>().AsSingle();
             Container.Bind<ServiceSystemFactory>().To<ServiceSystemFactory>().AsSingle();
             Container.Bind<SpiderLegFactory>().To<SpiderLegFactory>().AsSingle();
+            Container.Bind<BinderFactory>().To<BinderFactory>().AsSingle();
         }
 
         private void RegisterInputService() => Container.BindInterfacesTo<StandaloneInputService>().AsSingle();

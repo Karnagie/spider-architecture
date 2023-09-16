@@ -26,7 +26,7 @@ namespace Infrastructure.States
 
         private void EnterLoadLevel()
         {
-            _gameStateMachine.Enter<LoadLevelState, string>("Main");
+            _gameStateMachine.Enter<MenuState, string>("Menu");
         }
 
         private void InitializeServices()

@@ -10,11 +10,13 @@ namespace Infrastructure.Factories
         private ViewFactory _viewFactory;
         private SystemService _systemService;
         private ServiceSystemFactory _serviceSystemFactory;
+        private BinderFactory _binderFactory;
 
         public GameFactory(ViewFactory viewFactory, SystemService systemService,
-            ServiceSystemFactory serviceSystemFactory)
+            ServiceSystemFactory serviceSystemFactory, BinderFactory binderFactory)
         {
             _serviceSystemFactory = serviceSystemFactory;
+            _binderFactory = binderFactory;
             _systemService = systemService;
             _viewFactory = viewFactory;
         }
@@ -22,7 +24,7 @@ namespace Infrastructure.Factories
         public void CreateWorld()
         {
             var behaviour = _viewFactory.World();
-            var binder = new Binder();
+            var binder = _binderFactory.Create();
             var linker = new SystemLinker();
             var model  = new Ground();
 

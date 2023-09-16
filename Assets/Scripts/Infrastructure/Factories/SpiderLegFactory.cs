@@ -13,10 +13,12 @@ namespace Infrastructure.Factories
         private IPhysicsService _physicsService;
         private ViewFactory _viewFactory;
         private SystemService _systemService;
+        private BinderFactory _binderFactory;
 
-        public SpiderLegFactory(IPhysicsService physicsService, ViewFactory viewFactory, SystemService systemService)
+        public SpiderLegFactory(IPhysicsService physicsService, ViewFactory viewFactory, SystemService systemService, BinderFactory binderFactory)
         {
             _systemService = systemService;
+            _binderFactory = binderFactory;
             _viewFactory = viewFactory;
             _physicsService = physicsService;
         }
@@ -30,8 +32,8 @@ namespace Infrastructure.Factories
                 polePosition.x = -polePosition.x;
                 behaviour.Pole.localPosition = polePosition;
             }
-            
-            var binder = new Binder();//add to service
+
+            var binder = _binderFactory.Create();
             var linker = new SystemLinker();
 
             var legSystem = new LegSystem(_physicsService, behaviour.Length, behaviour);

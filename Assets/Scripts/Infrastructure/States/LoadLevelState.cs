@@ -4,6 +4,7 @@ using Infrastructure.Helpers;
 using Infrastructure.Services.Binding;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.System;
+using Infrastructure.Services.Ui;
 using UI;
 using UnityEngine;
 using Zenject;
@@ -17,10 +18,12 @@ namespace Infrastructure.States
         private readonly LoadingCurtain _loadingCurtain;
         private readonly SpiderFactory _spiderFactory;
         private GameFactory _gameFactory;
+        private WindowService _windowService;
 
         public LoadLevelState(GameStateMachine gameStateMachine, SceneLoader sceneLoader, LoadingCurtain loadingCurtain,
-            SpiderFactory spiderFactory, GameFactory gameFactory)
+            SpiderFactory spiderFactory, GameFactory gameFactory, WindowService windowService)
         {
+            _windowService = windowService;
             _gameFactory = gameFactory;
             _loadingCurtain = loadingCurtain;
             _sceneLoader = sceneLoader;
@@ -41,6 +44,9 @@ namespace Infrastructure.States
 
         private void OnLoaded()
         {
+            var window = _windowService.CreateLevelMenu();
+            window.Start.onClick.AddListener((() => _gameStateMachine.Enter<MenuState, string>("Menu")));
+            
             CreatePlayerSpider();
             
             _gameStateMachine.Enter<GameLoopState>();
