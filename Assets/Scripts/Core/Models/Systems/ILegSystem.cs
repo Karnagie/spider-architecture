@@ -11,7 +11,7 @@ namespace Core.Models.Systems
         private IPhysicsService _physicsService;
         private float _length;
         private Transform _startLeg;
-        private Vector3 _connectedPosition;
+        private Vector3? _connectedPosition;
         private Transform _pivot;
         private SpiderLegBehaviour _behaviour;
 
@@ -31,7 +31,10 @@ namespace Core.Models.Systems
         
         public bool Connecting()
         {
-            return Vector2.Distance(_connectedPosition, _startLeg.position) < _length;
+            if (_connectedPosition == null)
+                return false;
+            
+            return Vector2.Distance(_connectedPosition.Value, _startLeg.position) < _length;
         }
 
         private void TryConnect()
@@ -50,7 +53,7 @@ namespace Core.Models.Systems
 
             _connectedPosition = targetPosition;
             
-            _pivot.position = _connectedPosition;
+            _pivot.position = _connectedPosition!.Value;
         }
 
         private IPhysicBody FindClosest(IPhysicBody[] physicBodies)
