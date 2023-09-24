@@ -17,8 +17,23 @@ namespace Core.Models.Systems
         
         public void Tick()
         {
-            _model.Components.Rigidbody.bodyType = 
-                _spiderLegService.IsConnecting(_model) ? RigidbodyType2D.Static : RigidbodyType2D.Dynamic;
+            if (_spiderLegService.IsConnecting(_model))
+            {
+                _model.Components.Rigidbody.gravityScale = 0;
+                CalculateVelocity();
+            }
+            else
+            {
+                _model.Components.Rigidbody.gravityScale = 1;
+            }
+        }
+
+        private void CalculateVelocity()
+        {
+            var newVelocity = _model.Components.Rigidbody.velocity;
+            newVelocity.x -= 10 * newVelocity.x * Time.deltaTime;
+            newVelocity.y -= 10 * newVelocity.y * Time.deltaTime;
+            _model.Components.Rigidbody.velocity = newVelocity;
         }
     }
 }

@@ -17,7 +17,8 @@ namespace Core.Models.Systems
 
         public void FixedTick()
         {
-            _model.Components.Transform.Translate(_inputService.Moving());
+            var translation = _inputService.Moving();
+            _model.Components.Transform.Translate(translation);
         }
     }
 }
