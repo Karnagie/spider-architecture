@@ -56,7 +56,7 @@ namespace Infrastructure.States
         {
             _gameFactory.CreateWorld();
             _spiderFactory.CreatePlayer(new Vector3(0, 0, 0));
-            _spiderFactory.CreateEnemy(new Vector3(1, 1, 0));
+            // _spiderFactory.CreateEnemy(new Vector3(1, 1, 0));
         }
 
         public class Factory : PlaceholderFactory<GameStateMachine, SceneLoader, LoadingCurtain, LoadLevelState>

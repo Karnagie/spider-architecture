@@ -43,6 +43,23 @@ namespace Core.Models.Services
             return _systemService.TryFindSystems<IPhysicBody>(filters);
         }
 
+        public bool TryCastVector(Vector3 start, Vector3 end, out Vector2 point)
+        {
+            point = default;
+            var physicsBodies = _systemService.TryFindSystems<IPhysicBody>();
+
+            foreach (var physicsBody in physicsBodies)
+            {
+                if (physicsBody.OverlapLine(start, end, out var linePoint))
+                {
+                    point = linePoint;
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
         private Vector2 CalculateForce(ISpider target, ISpider pusher)
         {
             return (target.Components.Transform.position - pusher.Components.Transform.position).normalized;
@@ -54,5 +71,6 @@ namespace Core.Models.Services
         bool HasCollision(Collider2D first, Collider2D second);
         void TryPush(ISystem system, ISpider pusher);
         IPhysicBody[] All(params IFilter[] filters);
+        bool TryCastVector(Vector3 start, Vector3 end, out Vector2 point);
     }
 }

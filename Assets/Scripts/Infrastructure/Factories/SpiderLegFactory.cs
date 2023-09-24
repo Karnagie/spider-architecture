@@ -2,7 +2,6 @@
 using Core.Models;
 using Core.Models.Services;
 using Core.Models.Systems;
-using Infrastructure.Services.Binding;
 using Infrastructure.Services.System;
 using UnityEngine;
 
@@ -28,9 +27,8 @@ namespace Infrastructure.Factories
             var behaviour = _viewFactory.DefaultSpiderLeg(parent);
             if (invert)
             {
-                var polePosition = behaviour.Pole.localPosition;
-                polePosition.x = -polePosition.x;
-                behaviour.Pole.localPosition = polePosition;
+                InvertX(behaviour.Pole);
+                InvertX(behaviour.DefaultPivot);
             }
 
             var binder = _binderFactory.Create();
@@ -48,6 +46,14 @@ namespace Infrastructure.Factories
             linker.Add(legSystem);
             linker.Add(model);
         }
+
+        private void InvertX(Transform target)
+        {
+            var inverted = target.localPosition;
+            inverted.x = -inverted.x;
+            target.localPosition = inverted;
+        }
+            
 
         private void EnableRagdoll(SpiderLegBehaviour behaviour)
         {

@@ -22,37 +22,23 @@ namespace Core.Models.Systems
         {
             return _collider.ClosestPoint(position);
         }
-    }
-    
-    public class DefaultWorld : IPhysicBody
-    {
-        private Collider2D[] _colliders;
 
-        public DefaultWorld(Collider2D[] colliders)
+        public bool OverlapLine(Vector3 start, Vector3 end, out Vector3 point)
         {
-            _colliders = colliders;
-        }
-        
-        public void Push(Vector2 force, ForceMode2D forceMode)
-        {
-            return;
-        }
-
-        public Vector2 ClosestPointTo(Vector2 position)
-        {
-            var closestPosition = _colliders[0].ClosestPoint(position);
-            foreach (var collider in _colliders)
+            point = default;
+            RaycastHit2D[] bounds = new RaycastHit2D[] { };
+            var size = Physics2D.LinecastNonAlloc(start, end, bounds);
+            
+            foreach (var bound in bounds)
             {
-                var point = collider.ClosestPoint(position);
-                if (Vector3.Distance(position, point) 
-                    < 
-                    Vector3.Distance(position, closestPosition))
+                if (bound.collider == _collider)
                 {
-                    closestPosition = point;
+                    point = bound.point;
+                    return true;
                 }
             }
 
-            return closestPosition;
+            return false;
         }
     }
 }

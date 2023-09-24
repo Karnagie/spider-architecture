@@ -12,6 +12,7 @@ namespace Core.Behaviours
         public Transform Pole;
         public Transform TargetPivot;
         public GameObject[] Ragdoll;
+        public Transform DefaultPivot;
 
         private void OnDrawGizmos()
         {
