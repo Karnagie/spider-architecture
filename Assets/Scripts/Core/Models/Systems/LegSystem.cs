@@ -60,35 +60,38 @@ namespace Core.Models.Systems
             var ground = new Filter<Ground>();
             
             IPhysicBody[] collided = _physicsService.All(ground);
-            
             if (collided.Length == 0)
                 return false;
 
             var targetBody = FindClosest(collided);
             var targetPosition = targetBody.ClosestPointTo(_startLeg.position);
+            
             if(IsClose(targetPosition) == false)
                 return false;
 
             if (_connectedPosition != null && IsClose(_connectedPosition.Value))
-            {
                 return true;
-            }
 
             if (IsConnectedToBackground(collided))
             {
-                if (_physicsService.TryCastVector(_behaviour.DefaultPivot.position, _startLeg.position, out Vector2 point))
-                {
-                    _connectedPosition = point;
-                }
-                else
-                {
-                    _connectedPosition = _behaviour.DefaultPivot.position;
-                }
+                ConnectToBackground();
                 return true;
             }
 
             _connectedPosition = targetPosition;
             return true;
+        }
+
+        private void ConnectToBackground()
+        {
+            if (_physicsService.TryCastVector(_behaviour.DefaultPivot.position, _startLeg.position, out Vector2 point))
+            {
+                _connectedPosition = point;
+            }
+            else
+            {
+                _connectedPosition = _behaviour.DefaultPivot.position;
+            }
         }
 
         private IPhysicBody FindClosest(IPhysicBody[] physicBodies)
