@@ -30,23 +30,23 @@ namespace Core.Models.Systems
         
         public void Tick()
         {
-            Vector3 currentPosition;
-            Vector3 target;
             if(TryConnect())
             {
-                currentPosition = _pivot.transform.position;
-                target = Vector3.MoveTowards(currentPosition, _connectedPosition!.Value, 
-                    LegFollowSpeed * Time.deltaTime);
-                _pivot.transform.position = target;
+                MoveLegTowards(_connectedPosition!.Value);
                 return;
             }
-
-            currentPosition = _pivot.transform.position;
-            target = Vector3.MoveTowards(currentPosition, _behaviour.DefaultPivot.position, 
-                LegFollowSpeed * Time.deltaTime);
-            _pivot.transform.position = target;
+            
+            MoveLegTowards(_behaviour.DefaultPivot.position);
         }
-        
+
+        private void MoveLegTowards(Vector3 target)
+        {
+            var currentPosition = _pivot.transform.position;
+            var nextPosition = Vector3.MoveTowards(currentPosition, target,
+                LegFollowSpeed * Time.deltaTime);
+            _pivot.transform.position = nextPosition;
+        }
+
         public bool Connecting()
         {
             if (_connectedPosition == null)
@@ -68,6 +68,11 @@ namespace Core.Models.Systems
             var targetPosition = targetBody.ClosestPointTo(_startLeg.position);
             if(IsClose(targetPosition) == false)
                 return false;
+
+            if (_connectedPosition != null && IsClose(_connectedPosition.Value))
+            {
+                return true;
+            }
 
             if (IsConnectedToBackground(collided))
             {
